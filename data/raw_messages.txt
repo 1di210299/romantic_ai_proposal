@@ -1,0 +1,21 @@
+# Coloca aquí tus mensajes exportados de WhatsApp
+
+# INSTRUCCIONES:
+# 1. Abre WhatsApp
+# 2. Ve al chat con tu enamorada
+# 3. Toca el menú (⋮) → Más → Exportar chat → Sin multimedia
+# 4. Guarda el archivo .txt
+# 5. Copia TODO el contenido y pégalo aquí
+# 6. Ejecuta: python scripts/process_messages.py
+
+# Formato esperado:
+# [DD/MM/YYYY, HH:MM:SS] Tu Nombre: Mensaje
+# [DD/MM/YYYY, HH:MM:SS] Su Nombre: Respuesta
+
+# Ejemplo:
+# [15/01/2024, 18:30:45] Juan: Hola! Cómo estás?
+# [15/01/2024, 18:31:12] María: Bien! Y tú?
+# [15/01/2024, 18:32:00] Juan: Todo bien, quería invitarte a tomar un café mañana
+# [15/01/2024, 18:33:15] María: Me encantaría! 😊
+
+# PEGA TUS MENSAJES AQUÍ ABAJO:

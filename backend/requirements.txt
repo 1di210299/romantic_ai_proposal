@@ -1,0 +1,23 @@
+# Backend requirements for Romantic AI Proposal System
+
+# Web Framework
+flask==3.0.0
+flask-cors==4.0.0
+
+# OpenAI (Vision + Whisper + GPT)
+openai==1.12.0
+
+# Image Processing
+Pillow==10.2.0
+
+# Data Processing
+python-dotenv==1.0.0
+
+# Date/Time utilities
+python-dateutil==2.8.2
+
+# JSON processing
+jsonschema==4.20.0
+
+# Optional: Database (if needed)
+# sqlalchemy==2.0.25

@@ -1,0 +1,92 @@
+{
+  "quiz_metadata": {
+    "title": "Nuestro Rally del Amor 💕",
+    "description": "Un viaje por nuestros momentos especiales",
+    "created_by": "Tu nombre",
+    "created_for": "Nombre de tu enamorada",
+    "total_questions": 5
+  },
+  "questions": [
+    {
+      "id": 1,
+      "question": "¿En qué lugar nos conocimos por primera vez?",
+      "correct_answers": [
+        "Respuesta correcta 1",
+        "Variación de respuesta correcta"
+      ],
+      "hints": [
+        "Pista 1 si se equivoca",
+        "Pista 2 más específica"
+      ],
+      "context": "Contexto adicional para el chatbot",
+      "success_message": "¡Correcto! Ese lugar es muy especial para nosotros...",
+      "image_url": null,
+      "order": 1
+    },
+    {
+      "id": 2,
+      "question": "¿Qué día fue nuestra primera cita?",
+      "correct_answers": [
+        "Fecha exacta",
+        "Formato alternativo de fecha"
+      ],
+      "hints": [
+        "Fue un [día de la semana]",
+        "Fue en el mes de [mes]"
+      ],
+      "context": "Información sobre ese día especial",
+      "success_message": "¡Exacto! Ese día cambió todo...",
+      "image_url": null,
+      "order": 2
+    },
+    {
+      "id": 3,
+      "question": "¿Cuál es nuestra canción favorita?",
+      "correct_answers": [
+        "Nombre de la canción",
+        "Variaciones del nombre"
+      ],
+      "hints": [
+        "Es de [artista]",
+        "La escuchamos en [ocasión]"
+      ],
+      "context": "Por qué es especial esta canción",
+      "success_message": "¡Sí! Esa canción siempre nos hace recordar...",
+      "image_url": null,
+      "order": 3
+    },
+    {
+      "id": 4,
+      "question": "¿Cuál fue el primer apodo cariñoso que te puse?",
+      "correct_answers": [
+        "Apodo 1",
+        "Variación del apodo"
+      ],
+      "hints": [
+        "Tiene que ver con [característica]",
+        "Lo usé por primera vez cuando [situación]"
+      ],
+      "context": "Historia detrás del apodo",
+      "success_message": "¡Correcto! Ese apodo es solo tuyo...",
+      "image_url": null,
+      "order": 4
+    },
+    {
+      "id": 5,
+      "question": "¿Qué me dijiste la primera vez que hablamos?",
+      "correct_answers": [
+        "Frase exacta o similar",
+        "Variación de la frase"
+      ],
+      "hints": [
+        "Fue algo sobre [tema]",
+        "Me hizo sentir [emoción]"
+      ],
+      "context": "Por qué ese momento fue importante",
+      "success_message": "¡Exacto! Esas palabras me llegaron al corazón. Ahora... tengo algo especial esperándote.",
+      "image_url": null,
+      "order": 5,
+      "reveals_location": true
+    }
+  ]
+}
