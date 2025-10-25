@@ -4,8 +4,12 @@
 flask==3.0.0
 flask-cors==4.0.0
 
-# OpenAI (Vision + Whisper + GPT)
+# OpenAI (Vision + Whisper + GPT + Embeddings)
 openai==1.12.0
+
+# Vector Search & Embeddings
+faiss-cpu==1.7.4
+numpy==1.24.3
 
 # Image Processing
 Pillow==10.2.0
