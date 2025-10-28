@@ -18,6 +18,7 @@ class SpacesDataLoader:
     def download_conversation_files(self):
         """Descarga todos los archivos de conversación desde Spaces"""
         files = ['message_1.json', 'message_2.json', 'message_3.json', 'message_4.json']
+        cache_files = ['rag_embeddings.pkl', 'faiss_index.bin']
         all_messages = []
         
         print(f"📡 Descargando datos desde DigitalOcean Spaces...")
