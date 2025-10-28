@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from 'react';
 import { Heart, MessageCircle, Calendar, Sparkles, Bot, TrendingUp, Users, Clock } from 'lucide-react';
 
