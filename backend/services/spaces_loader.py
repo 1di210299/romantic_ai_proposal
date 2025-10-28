@@ -135,6 +135,32 @@ class SpacesDataLoader:
             return []
         return all_messages
     
+    def download_complete_transcription(self):
+        """Descarga la transcripción completa desde Spaces"""
+        try:
+            url = f"{self.spaces_url}/historia_completa_transcripcion.txt"
+            print(f"📜 Descargando transcripción completa desde: {url}")
+            
+            response = requests.get(url, timeout=30)
+            
+            if response.status_code == 200:
+                transcription_content = response.text
+                print(f"✅ Transcripción descargada: {len(transcription_content)} caracteres")
+                
+                # Guardar en cache local
+                cache_file = self.cache_dir / 'historia_completa_transcripcion.txt'
+                with open(cache_file, 'w', encoding='utf-8') as f:
+                    f.write(transcription_content)
+                    
+                return transcription_content
+            else:
+                print(f"❌ Error descargando transcripción: {response.status_code}")
+                return ""
+                
+        except Exception as e:
+            print(f"❌ Error descargando transcripción: {e}")
+            return ""
+    
     def test_connection(self):
         """Prueba la conexión a Spaces"""
         try:

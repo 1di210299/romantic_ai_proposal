@@ -321,24 +321,24 @@ def generate_single_question_with_openai(messages: list, question_number: int, p
     
     print(f"🤖 Generando pregunta #{question_number} con OpenAI + RAG...")
     
-    # 🔍 PASO 1: Temas ultra específicos para búsqueda contextual profunda
-    # CADA TEMA busca contextos únicos e irrepetibles de la relación  
+    # 🔍 PASO 1: Momentos importantes de la relación para búsqueda específica
+    # CADA TEMA se enfoca en HITOS REALES de su historia juntos
     question_topics = [
-        "jajaja risa chistoso gracioso divertido reír humor broma chiste",  # Momentos específicos de humor
-        "lugar salir ir vamos fuimos parque casa restaurante cine café",  # Lugares y experiencias específicas
-        "comida comer hambre desayuno almuerzo cena pizza hamburguesa",  # Contextos gastronómicos únicos
-        "película ver Netflix serie programa televisión película favorita",  # Entertainment específico visto
-        "futuro planes casarnos hijos familia sueños juntos siempre",  # Planes concretos mencionados
-        "problema enojado pelea discusión triste mal perdón disculpa",  # Conflictos y resoluciones específicas
-        "regalo sorpresa detalle especial romántico cumpleaños aniversario",  # Momentos románticos únicos
-        "canción música artista bailar escuchar spotify reproducir",  # Referencias musicales específicas
-        "amigos familia conocer presentar mamá papá hermana hermano",  # Contextos sociales/familiares
-        "primera vez beso te amo inicio conocimos empezamos",  # Hitos relacionales específicos
-        "trabajo estudios universidad clase profesor examen tarea",  # Contexto académico/profesional  
-        "viaje vacaciones playa montaña ciudad país avión carro",  # Experiencias de viaje específicas
-        "enfermo dolor cabeza medicina doctor hospital cuidar",  # Momentos de cuidado mutuo
-        "noche dormir sueño despertar mañana tarde madrugada",  # Rutinas y horarios específicos
-        "foto selfie imagen bonita hermosa guapo lindo",  # Contextos visuales/estéticos
+        "primer beso viernes reunión amigos trabajo besábamos fiestas",  # Primer beso
+        "flores tulipanes amarillos julio Rosatel Cusco entrega confundieron",  # Primer regalo de flores
+        "anticuchos lomo agosto 23 conversando vida bonito propuesta",  # Primer encuentro romántico
+        "página web flores especial enamorada innovar única manera",  # La propuesta especial
+        "Chimbote viaje planeado almorzar casa trabajo lindo pasaron",  # Viaje a Chimbote
+        "playa primer beso romántico viernes tarde abrazados besaron",  # Primer beso en la playa
+        "cine Lima septiembre primera vez juntos películas abrazados japonesa",  # Primera cita en Lima
+        "Trujillo hotel playa mar hermano conoció copas comer besaron",  # Segundo viaje
+        "papás familia septiembre acercó compartió familias conocer",  # Acercamiento familias
+        "Lima octubre trabajo mudó primeros días conseguir empleo",  # Karem se muda a Lima
+        "te amo domingo 5 octubre madrugada hablaron día siguiente",  # Declaración de amor
+        "restaurante especial primer invitó importante momento relación",  # Restaurante especial
+        "marzo 2025 empezamos amigos juntábamos amiga físicamente atraído",  # Inicio de la relación
+        "química conexión especial miércoles conocimos reuniones fiestas",  # Conexión inicial
+        "cocinar Chimbote primera vez preparó rico encantó comida"  # Primera vez cocinando
     ]
     
     # Usar el índice exacto de la pregunta (sin rotar) para variedad
@@ -347,15 +347,36 @@ def generate_single_question_with_openai(messages: list, question_number: int, p
     
     print(f"🔍 Búsqueda RAG: '{search_query}'...")
     
-    # Buscar chunks relevantes
-    relevant_chunks = current_rag.search(search_query, k=15)
+    # PRIORIDAD 1: Cargar TODA la transcripción completa de momentos importantes
+    transcription_content = ""
     
-    # Extraer todos los mensajes de los chunks relevantes
+    try:
+        from services.spaces_loader import SpacesDataLoader
+        spaces_loader = SpacesDataLoader()
+        transcription_content = spaces_loader.download_complete_transcription()
+        
+        if not transcription_content:
+            # Fallback: intentar archivo local
+            transcription_path = Path(__file__).parent / "data/historia_completa_transcripcion.txt"
+            if transcription_path.exists():
+                with open(transcription_path, 'r', encoding='utf-8') as f:
+                    transcription_content = f.read()
+                print(f"✅ TRANSCRIPCIÓN desde archivo local: {len(transcription_content)} caracteres")
+        else:
+            print(f"✅ TRANSCRIPCIÓN desde Spaces: {len(transcription_content)} caracteres")
+            
+    except Exception as e:
+        print(f"❌ Error cargando transcripción: {e}")
+    
+    # PRIORIDAD 2: Buscar chunks adicionales en RAG como complemento
+    relevant_chunks = current_rag.search(search_query, k=8)  # Menos chunks, transcripción es prioritaria
+    
+    # Extraer mensajes adicionales de RAG
     relevant_messages = []
     for chunk in relevant_chunks:
         relevant_messages.extend(chunk['messages_in_chunk'])
     
-    print(f"📚 Encontrados {len(relevant_messages)} mensajes relevantes para el tema")
+    print(f"📚 Transcripción completa + {len(relevant_messages)} mensajes adicionales")
     
     # 📊 PASO 2: ANÁLISIS CONTEXTUAL ULTRA PROFUNDO
     print(f"🔬 Analizando {len(relevant_messages)} mensajes para encontrar contextos únicos e irrepetibles...")
@@ -434,10 +455,15 @@ def generate_single_question_with_openai(messages: list, question_number: int, p
     first_date = sorted_messages[0]['date'] if sorted_messages else "fecha no disponible"
     last_date = sorted_messages[-1]['date'] if sorted_messages else "fecha no disponible"
     
-    # Formatear los mensajes más relevantes para análisis
-    examples_text = "\n".join([
+    # PRIORIDAD 1: Incluir TODA la transcripción de momentos importantes
+    examples_text = "🌹 HISTORIA COMPLETA DE MOMENTOS ROMÁNTICOS IMPORTANTES:\n"
+    if transcription_content:
+        examples_text += transcription_content + "\n\n"
+    
+    # PRIORIDAD 2: Agregar mensajes adicionales como contexto complementario
+    examples_text += "📱 MENSAJES ADICIONALES DE CONTEXTO:\n" + "\n".join([
         f"- [{msg['date']}] {msg['sender']}: \"{msg['content']}\""
-        for msg in detailed_messages[:15]  # Los primeros 15 mensajes más relevantes
+        for msg in detailed_messages[:8]  # Menos mensajes, transcripción es prioritaria
     ])
     
     previous_qs = "\n".join([f"- {q.get('question', '')}" for q in (previous_questions or [])]) if previous_questions else "ninguna"

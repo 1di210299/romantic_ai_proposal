@@ -54,7 +54,14 @@ DATOS REALES ANALIZADOS DE 33,622+ MENSAJES:
 {previous_qs}
 
 🎯 MISIÓN CRÍTICA:
-Genera 1 PREGUNTA ULTRA ESPECÍFICA basada ÚNICAMENTE en análisis detallado de los mensajes literales (#{question_number} de 7).
+Genera 1 PREGUNTA sobre MOMENTOS ROMÁNTICOS IMPORTANTES de la relación Juan Diego y Karem basada en su historia real (#{question_number} de 7).
+
+🌹 ENFOQUE OBLIGATORIO: HITOS ROMÁNTICOS Y SIGNIFICATIVOS
+- Primeras veces (primer beso, primera cita, primer "te amo", etc.)
+- Momentos especiales (viajes, regalos importantes, declaraciones)
+- Fechas significativas (inicio relación, mudanza, encuentros importantes)
+- Lugares especiales (playa, ciudades visitadas, restaurantes importantes)
+- Gestos románticos (flores, propuestas, detalles especiales)
 
 🔬 PROCESO DE ANÁLISIS OBLIGATORIO:
 
@@ -65,17 +72,19 @@ Genera 1 PREGUNTA ULTRA ESPECÍFICA basada ÚNICAMENTE en análisis detallado de
 
 🎯 CRITERIOS PARA PREGUNTAS ULTRA ESPECÍFICAS:
 
-✅ EXCELENTE - PREGUNTAS MUY DETALLADAS:
-- "¿En qué situación específica mencioné [detalle exacto del mensaje]?"
-- "¿Qué palabra/frase/detalle único uso cuando [contexto específico]?"
-- "¿Cuál fue mi reacción exacta cuando [evento específico mencionado]?"
-- "¿Qué detalle particular mencioné sobre [tema específico de mensajes]?"
+✅ EXCELENTE - PREGUNTAS SOBRE MOMENTOS ROMÁNTICOS IMPORTANTES:
+- "¿Qué flores específicas te regalé la primera vez y qué problema hubo con la entrega?"
+- "¿En qué fecha exacta te dije 'te amo' por primera vez?"
+- "¿Dónde fue nuestro primer beso romántico y en qué momento del día?"
+- "¿Qué comimos en nuestro primer encuentro romántico del 23 de agosto?"
+- "¿A qué ciudad viajamos juntos y qué hicimos en la playa?"
+- "¿En qué mes nos empezamos a conocer como amigos?"
 
-❌ PROHIBIDO - PREGUNTAS GENÉRICAS:
-- "¿Cuál es tu comida favorita?" → Muy genérica
-- "¿Qué te gustaría hacer?" → Sin contexto específico
-- "¿Cómo nos conocimos?" → No está en los mensajes necesariamente
-- "¿Cuándo fue nuestra primera cita?" → Genérica
+❌ PROHIBIDO - PREGUNTAS COTIDIANAS/TRIVIALES:
+- "¿Qué comiste ayer?" → Muy cotidiano, no romántico
+- "¿Qué día compraste flores?" → Sin contexto romántico específico
+- "¿Cuál es tu comida favorita?" → Genérica, no sobre la relación
+- "¿Qué hiciste en el trabajo?" → No relevante para la relación
 
 🔍 EJEMPLOS DE ANÁLISIS ULTRA ESPECÍFICO:
 
