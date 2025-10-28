@@ -8,20 +8,20 @@ flask-cors==4.0.0
 openai>=1.50.0
 
 # Vector Search & Embeddings
-faiss-cpu==1.7.4
-numpy==1.24.3
+faiss-cpu>=1.8.0
+numpy>=1.24.0
 
 # Image Processing
-Pillow==10.2.0
+Pillow>=10.0.0
 
 # Data Processing
-python-dotenv==1.0.0
+python-dotenv>=1.0.0
 
 # Date/Time utilities
-python-dateutil==2.8.2
+python-dateutil>=2.8.0
 
 # JSON processing
-jsonschema==4.20.0
+jsonschema>=4.20.0
 
 # Optional: Database (if needed)
 # sqlalchemy==2.0.25
