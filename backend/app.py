@@ -370,33 +370,34 @@ def generate_single_question_with_openai(messages: list, question_number: int, p
 
 
 # Health check endpoint for monitoring and Docker
-@app.route('/health', methods=['GET'])
+@app.route('/', methods=['GET'])
+def root():
+    """Root endpoint - redirect to frontend"""
+    return jsonify({
+        "message": "Romantic AI Proposal Backend API",
+        "version": "2.4",
+        "status": "running",
+        "endpoints": {
+            "health": "/api/health",
+            "chat": "/api/chat",
+            "quiz": "/api/quiz/*"
+        }
+    })
+
+@app.route('/api/health', methods=['GET'])
 def health_check():
-    """Health check endpoint for monitoring."""
+    """Health check endpoint for deployment verification"""
     try:
-        # Check if OpenAI API key is configured
-        api_key_status = "configured" if os.getenv('OPENAI_API_KEY') and os.getenv('OPENAI_API_KEY') != 'your_openai_api_key_here' else "missing"
-        
-        # Check if RAG service is initialized
-        rag_status = "initialized" if rag_service else "not_initialized"
-        
-        # Check if conversation data exists
-        data_status = "found" if CONVERSATION_PATH.exists() else "missing"
-        
         return jsonify({
-            "status": "healthy",
+            "status": "ok",
             "timestamp": datetime.now().isoformat(),
-            "openai_api": api_key_status,
-            "rag_service": rag_status,
-            "conversation_data": data_status,
-            "active_sessions": len(quiz_sessions)
-        }), 200
-    
+            "rag_enabled": rag_service is not None,
+            "total_messages": len(rag_service.chunk_texts) if rag_service else 0
+        })
     except Exception as e:
         return jsonify({
-            "status": "unhealthy",
-            "error": str(e),
-            "timestamp": datetime.now().isoformat()
+            "status": "error", 
+            "error": str(e)
         }), 500
 
 

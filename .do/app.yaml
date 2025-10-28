@@ -11,13 +11,14 @@ services:
   instance_size_slug: basic-xxs
   routes:
   - path: /api
+  http_port: 8080
   envs:
   - key: OPENAI_API_KEY
     scope: RUN_TIME
     type: SECRET
-  - key: SECRET_KEY
+  - key: SPACES_DATA_URL
     scope: RUN_TIME
-    type: SECRET
+    value: https://romantic-ai-data.sfo3.digitaloceanspaces.com
   - key: FLASK_ENV
     scope: RUN_TIME
     value: production
@@ -40,6 +41,7 @@ services:
   instance_size_slug: basic-xxs
   routes:
   - path: /
+  http_port: 3000
   envs:
   - key: NEXT_PUBLIC_BACKEND_URL
     scope: RUN_AND_BUILD_TIME
