@@ -1,0 +1,1099 @@
+{
+  "metadata": {
+    "analyzed_at": "2025-10-22T12:35:40.310538",
+    "total_messages": 33622,
+    "chunk_size_used": 5000,
+    "processing_method": "parallel_chunks"
+  },
+  "timeline": {
+    "first_message": {
+      "date": "2025-05-01 23:29:31",
+      "timestamp": 1746160171363
+    },
+    "last_message": {
+      "date": "2025-10-21 23:49:00",
+      "timestamp": 1761108540832
+    },
+    "days_together": 173,
+    "years_together": 0.47,
+    "avg_messages_per_day": 194.3,
+    "messages_by_month": {
+      "2025-05": 1705,
+      "2025-06": 4347,
+      "2025-07": 7009,
+      "2025-08": 5473,
+      "2025-09": 6042,
+      "2025-10": 3441
+    }
+  },
+  "participants": {
+    "Juan Diego Gutierrez": {
+      "total_messages": 19804,
+      "percentage": 58.9
+    },
+    "Karem Ramos": {
+      "total_messages": 13818,
+      "percentage": 41.1
+    }
+  },
+  "content_analysis": {
+    "top_words": [
+      {
+        "word": "estã",
+        "count": 1229
+      },
+      {
+        "word": "bueno",
+        "count": 853
+      },
+      {
+        "word": "puem",
+        "count": 770
+      },
+      {
+        "word": "porque",
+        "count": 633
+      },
+      {
+        "word": "creo",
+        "count": 624
+      },
+      {
+        "word": "amor",
+        "count": 497
+      },
+      {
+        "word": "solo",
+        "count": 496
+      },
+      {
+        "word": "jajajaja",
+        "count": 493
+      },
+      {
+        "word": "jajaja",
+        "count": 456
+      },
+      {
+        "word": "nada",
+        "count": 431
+      },
+      {
+        "word": "edited",
+        "count": 419
+      },
+      {
+        "word": "estoy",
+        "count": 419
+      },
+      {
+        "word": "entonces",
+        "count": 383
+      },
+      {
+        "word": "mejor",
+        "count": 373
+      },
+      {
+        "word": "okey",
+        "count": 369
+      },
+      {
+        "word": "igual",
+        "count": 360
+      },
+      {
+        "word": "estaba",
+        "count": 336
+      },
+      {
+        "word": "jajajajaja",
+        "count": 331
+      },
+      {
+        "word": "realmente",
+        "count": 311
+      },
+      {
+        "word": "audio",
+        "count": 309
+      },
+      {
+        "word": "algo",
+        "count": 303
+      },
+      {
+        "word": "cã³mo",
+        "count": 300
+      },
+      {
+        "word": "pucha",
+        "count": 299
+      },
+      {
+        "word": "mucho",
+        "count": 287
+      },
+      {
+        "word": "quiero",
+        "count": 284
+      },
+      {
+        "word": "ahora",
+        "count": 279
+      },
+      {
+        "word": "karem",
+        "count": 275
+      },
+      {
+        "word": "call",
+        "count": 273
+      },
+      {
+        "word": "message",
+        "count": 268
+      },
+      {
+        "word": "avisas",
+        "count": 254
+      },
+      {
+        "word": "tengo",
+        "count": 251
+      },
+      {
+        "word": "dije",
+        "count": 247
+      },
+      {
+        "word": "mamã",
+        "count": 243
+      },
+      {
+        "word": "comer",
+        "count": 241
+      },
+      {
+        "word": "poco",
+        "count": 222
+      },
+      {
+        "word": "dormir",
+        "count": 215
+      },
+      {
+        "word": "casa",
+        "count": 214
+      },
+      {
+        "word": "hacer",
+        "count": 214
+      },
+      {
+        "word": "mayra",
+        "count": 205
+      },
+      {
+        "word": "siempre",
+        "count": 195
+      },
+      {
+        "word": "menos",
+        "count": 188
+      },
+      {
+        "word": "dijo",
+        "count": 187
+      },
+      {
+        "word": "pues",
+        "count": 185
+      },
+      {
+        "word": "ayer",
+        "count": 181
+      },
+      {
+        "word": "osea",
+        "count": 181
+      },
+      {
+        "word": "liked",
+        "count": 180
+      },
+      {
+        "word": "papã",
+        "count": 177
+      },
+      {
+        "word": "nunca",
+        "count": 176
+      },
+      {
+        "word": "cosas",
+        "count": 175
+      },
+      {
+        "word": "tarde",
+        "count": 174
+      }
+    ],
+    "top_nicknames": [
+      {
+        "nickname": "amor",
+        "count": 467
+      },
+      {
+        "nickname": "lindo",
+        "count": 98
+      },
+      {
+        "nickname": "vida",
+        "count": 63
+      },
+      {
+        "nickname": "linda",
+        "count": 32
+      },
+      {
+        "nickname": "mi amor",
+        "count": 30
+      },
+      {
+        "nickname": "cielo",
+        "count": 25
+      },
+      {
+        "nickname": "mi vida",
+        "count": 13
+      },
+      {
+        "nickname": "hermosa",
+        "count": 4
+      },
+      {
+        "nickname": "gordito",
+        "count": 3
+      },
+      {
+        "nickname": "flaca",
+        "count": 3
+      },
+      {
+        "nickname": "chiquito",
+        "count": 3
+      },
+      {
+        "nickname": "hermoso",
+        "count": 3
+      },
+      {
+        "nickname": "amorcito",
+        "count": 2
+      },
+      {
+        "nickname": "flaco",
+        "count": 2
+      },
+      {
+        "nickname": "reina",
+        "count": 1
+      },
+      {
+        "nickname": "gordita",
+        "count": 1
+      },
+      {
+        "nickname": "chiquita",
+        "count": 1
+      },
+      {
+        "nickname": "bb",
+        "count": 1
+      },
+      {
+        "nickname": "bebe",
+        "count": 1
+      }
+    ],
+    "top_locations": [
+      {
+        "location": "u",
+        "count": 15709
+      },
+      {
+        "location": "casa",
+        "count": 232
+      },
+      {
+        "location": "bar",
+        "count": 111
+      },
+      {
+        "location": "trabajo",
+        "count": 78
+      },
+      {
+        "location": "depa",
+        "count": 39
+      },
+      {
+        "location": "restaurante",
+        "count": 19
+      },
+      {
+        "location": "cine",
+        "count": 19
+      },
+      {
+        "location": "universidad",
+        "count": 17
+      },
+      {
+        "location": "centro",
+        "count": 17
+      },
+      {
+        "location": "aeropuerto",
+        "count": 15
+      },
+      {
+        "location": "plaza",
+        "count": 15
+      },
+      {
+        "location": "parque",
+        "count": 15
+      },
+      {
+        "location": "terminal",
+        "count": 12
+      },
+      {
+        "location": "playa",
+        "count": 9
+      },
+      {
+        "location": "hotel",
+        "count": 4
+      }
+    ],
+    "total_unique_words": 10017,
+    "total_location_mentions": 16321,
+    "total_date_mentions": 8
+  },
+  "location_details": [
+    {
+      "date": "2025-05-01",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "No antojes causa que abuso"
+    },
+    {
+      "date": "2025-05-07",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Buen viaje mOrEnAje"
+    },
+    {
+      "date": "2025-05-07",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Puro migajero en este chat, botada para la gente en este chat, causa"
+    },
+    {
+      "date": "2025-05-08",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Pero que tal el carrot cake de sienna"
+    },
+    {
+      "date": "2025-05-08",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "El de MarÃ­a Almenara es mÃ¡s dulce"
+    },
+    {
+      "date": "2025-05-08",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Ya va a llegar la cuota del 1.80 de la farmacia a 12 cuotas. Esperare sentado el primer pago"
+    },
+    {
+      "date": "2025-05-08",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Ya sabÃ­a que me habÃ­as yapeado"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "PensÃ© que no lo habÃ­as visto pues"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Karem estaba a tu costado cuando me lo mostraste"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Aun no puedo creer que de verdad me hayas eliminado de contactos"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Ãsea que sea mÃ¡s dulce para ti significa que es mas rico?"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Umhhh no lo he probado"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Creo que nunca he probado algo de maria almenara en realidad"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Ok perdÃ³n, a la siguiente llevo uno mejor ð"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Que tal te trata la vida en chimbote Dps de volver al dÃ­a y media de haber vuelto a Lima"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Que tal te trata la vida en chimbote Dps de volver al dÃ­a y media de haber llegado a Lima (edited)"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Y yo Bruno"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Es que mira si la torta fuera mÃ¡s grande"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Normal, porque el dulzor tiene que ver con el tamaÃ±o"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Y como su torta no era tan dulce, al menos el tamaÃ±o tendrÃ­a que ser proporciÃ³n al dulzor"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Karem Ramos",
+      "keyword": "restaurante",
+      "context": "En cambio aquÃ­ en Chimbote hay dos restaurantes que hacen ricos su torta de carrot cake"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "En cambio aquÃ­ en Chimbote hay dos restaurantes que hacen ricos su torta de carrot cake"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Karem Ramos",
+      "keyword": "bar",
+      "context": "Igual en Lima me falta probar otras pastelerÃ­a S"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Igual en Lima me falta probar otras pastelerÃ­a S"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Pues sÃºper bien"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "La verdad tengo amigas que me llevan a  todos lados pero si evito salir un poco"
+    },
+    {
+      "date": "2025-05-09",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Quieren salir maÃ±ana pero no irÃ© porque el domingo tengo que levantarme temprano"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "You sent an attachment."
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Que haces despierta tan tarde"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Toda una crÃ­tica culinaria"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Me gusta"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "FÃ¡cil si es que hay varias pero de ð¥ cake asÃ­ no se la vrdd"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Eso es bueno, te veo en la piscina y ahora en un tono asÃ­ que buenazo tmb"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "casa",
+      "context": "Con lo comentaste lo que dijo tu mamÃ¡ la vez pasada, fÃ¡cil tmb es un poco pesado estar siempre en casa"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Con lo comentaste lo que dijo tu mamÃ¡ la vez pasada, fÃ¡cil tmb es un poco pesado estar siempre en casa"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "AsÃ­ que distraerte estÃ¡ bien"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Jajajaajajja es que salir un dÃ­a antes del dÃ­a de la madres muy verraco"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Que le vas a regalar?"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Musho cloro"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Yo ya le  comprÃ© sus rosas"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Y su cartera guess"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Es el que te inventas"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Si floreo ahora es porque tÃº me enseÃ±aste chapozita"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Vaaaaa que buena hija"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "El tono no estÃ¡ bueno?"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "No tomes mucho chapozita"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Lo comprÃ© hace un mes"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Por una agencia que trae productos de Usa"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Ya anda tonea que mÃ±n"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Okey duerme"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Ya estoy seÃ±or perdÃ³n puem"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "MÃ¡s joya es que me agregues de vuelta a tu contactos"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Que tÃ©trico que todo sea rojo locurita"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Y yo mmm bueno"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Peores cosas me han dicho de ese lugar"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Buena rola"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Ya ahÃ­ otro dÃ­a te convenzo que me agregues"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "restaurante",
+      "context": "Peroooooo hoy estÃ¡s trabajando en el restaurante?"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Peroooooo hoy estÃ¡s trabajando en el restaurante?"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Si voy me haces descuento?"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Locura"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "casa",
+      "context": "U hoy sigues en esa casa de campo?"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "U hoy sigues en esa casa de campo?"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Cuando vuelves vrdd?"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Una vez me las leyeron, le acertÃ³ a casi todo"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Igualitas locura"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Karem Ramos",
+      "keyword": "casa",
+      "context": "No solo fuimos a la casa de mi amiga a darnos un chapuzÃ³n y ya luego salimos en la noche"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "No solo fuimos a la casa de mi amiga a darnos un chapuzÃ³n y ya luego salimos en la noche"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Yo nunca he ido"
+    },
+    {
+      "date": "2025-05-10",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "JAJAJAJAJA mi mami pues"
+    },
+    {
+      "date": "2025-05-11",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Vaaaa, es en nuevo chimbote ? El paisaje taba lindo"
+    },
+    {
+      "date": "2025-05-11",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Umhhh me lo hicieron por llamada, buenazo es"
+    },
+    {
+      "date": "2025-05-11",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Aunque ahora la gente usa ChatGPT"
+    },
+    {
+      "date": "2025-05-11",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Pa que te lea"
+    },
+    {
+      "date": "2025-05-11",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Son igualitas jajajajaja"
+    },
+    {
+      "date": "2025-05-11",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Feliz dÃ­a pa tu seÃ±ora madre"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Ptmre jajaja si no voy yo se mueren de hambre causa jajaja"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "AcÃ¡ andamos muriendo de hambre"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Cague de risa"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Next week tequeÃ±os de pollo a la brasa ft Shola Mayra Andrea"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "tequeÃ±os By Mayra"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Uno por la cabeza nos va a tirar"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Tu frÃ­es"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Uno que te da chance"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Soluciona puem"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Asuuu oeee donde queremos pedir ni casooo nos hacen"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Falta el que soluciona en esa cas"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "casa",
+      "context": "Casa*"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Ya ahÃ­ solucionÃ³ como siempre"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "AsÃ­ como lleguÃ© con el buen plÃ¡tano de isla pa los ð¥"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Oe de verdad tu hablas grueso"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Encima que te acabaste todo la cremita esa"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Yo tuve que comer ð¥ asÃ­ sin nada"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Ni querÃ­as comer"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Con unas ganas comÃ­as"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Disfruto la comida puem"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "En este chat solo me juzgan"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "Los panqueques parece que no te gustaron"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Karem Ramos",
+      "keyword": "u",
+      "context": "SÃ­ y un rotundo SI"
+    },
+    {
+      "date": "2025-05-16",
+      "sender": "Juan Diego Gutierrez",
+      "keyword": "u",
+      "context": "Si me gustaron oe"
+    }
+  ],
+  "date_mentions": [
+    {
+      "date": "2025-05-23",
+      "sender": "Juan Diego Gutierrez",
+      "mention": "No vaya a ser como ayer que me dices â22 de mayo empieza â y yo âah hoy entonces empiezaâ y tÃº âTE DIGO QUE 22 DE MAYOâ"
+    },
+    {
+      "date": "2025-05-23",
+      "sender": "Juan Diego Gutierrez",
+      "mention": "No vaya a ser como ayer que me dices â22 de mayo empieza â y yo âah hoy entonces empiezaâ y tÃº âTE DIGO QUE 22 DE MAYOâ y que me agarras y que te digo y que te agarro y que te digo âhoy"
+    },
+    {
+      "date": "2025-05-23",
+      "sender": "Juan Diego Gutierrez",
+      "mention": "No vaya a ser como ayer que me dices â22 de mayo empieza â y yo âah hoy entonces empiezaâ y tÃº âTE DIGO QUE 22 DE MAYOâ y que me agarras y que me dices y que te agarro y que te digo âho"
+    },
+    {
+      "date": "2025-10-13",
+      "sender": "Karem Ramos",
+      "mention": "Para Navidad porque justo hoy en la formaciÃ³n dijeron no estÃ¡n permitidos los permisos desde el 15 de noviembre"
+    },
+    {
+      "date": "2025-08-16",
+      "sender": "Juan Diego Gutierrez",
+      "mention": "WCR6+FRW, 2 De Junio Urb. Laderas del norte, Chimbote, Ancash 02803, PerÃº"
+    },
+    {
+      "date": "2025-08-16",
+      "sender": "Karem Ramos",
+      "mention": "Creo que el 2 de junio es metido"
+    },
+    {
+      "date": "2025-09-28",
+      "sender": "Juan Diego Gutierrez",
+      "mention": "Ãsea la terminal de AmÃ©rica 28 de julio?"
+    },
+    {
+      "date": "2025-09-28",
+      "sender": "Karem Ramos",
+      "mention": "De la 28 de julio"
+    }
+  ],
+  "question_suggestions": [
+    {
+      "category": "Inicio de la relación",
+      "question": "¿Recuerdas cuándo fue nuestro primer mensaje en Instagram?",
+      "type": "date",
+      "correct_answers": [
+        "2025-05-01 23:29:31",
+        "01 de May de 2025",
+        "May 2025"
+      ],
+      "hints": [
+        "Fue hace 0.47 años...",
+        "Fue en el mes de May",
+        "Exactamente el 01 de May de 2025"
+      ],
+      "difficulty": "hard"
+    },
+    {
+      "category": "Lugares especiales",
+      "question": "¿Cuál es el tipo de lugar que más mencionamos en nuestras conversaciones?",
+      "type": "location",
+      "correct_answers": [
+        "u",
+        "us",
+        "el u"
+      ],
+      "hints": [
+        "Es un lugar donde solemos pasar tiempo...",
+        "Tiene que ver con u...",
+        "Es: u"
+      ],
+      "context": "Mencionado 15709 veces",
+      "difficulty": "medium"
+    },
+    {
+      "category": "Apodos cariñosos",
+      "question": "¿Cómo te digo más seguido?",
+      "type": "nickname",
+      "correct_answers": [
+        "amor",
+        "mi amor",
+        "amor"
+      ],
+      "hints": [
+        "Es un apodo cariñoso muy común...",
+        "Empieza con 'am'...",
+        "Es: amor"
+      ],
+      "context": "Usado 467 veces",
+      "difficulty": "easy"
+    },
+    {
+      "category": "Estadísticas",
+      "question": "¿Cuántos mensajes nos enviamos aproximadamente por día?",
+      "type": "number",
+      "correct_answers": [
+        "194",
+        "194 mensajes",
+        "como 194",
+        "alrededor de 194"
+      ],
+      "hints": [
+        "Son más de 136...",
+        "Menos de 252...",
+        "Exactamente 194 mensajes"
+      ],
+      "difficulty": "hard"
+    }
+  ]
+}

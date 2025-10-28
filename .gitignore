@@ -43,6 +43,8 @@ data/test_*.json
 data/openai_analysis.json
 data/complete_relationship_analysis.json
 data/raw_messages.txt
+# Permitir archivos message_*.json en data/ como backup
+!data/message_*.json
 
 # Node.js / Next.js
 node_modules/

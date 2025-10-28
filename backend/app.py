@@ -89,7 +89,10 @@ def load_all_messages():
         Path("../karemramos_1184297046409691"),  # Relativa desde backend
         Path("./karemramos_1184297046409691"),   # Relativa desde directorio actual
         Path("/workspace/karemramos_1184297046409691"),  # DigitalOcean workspace
-        Path(__file__).parent.parent / "karemramos_1184297046409691"  # Desde raíz del proyecto
+        Path(__file__).parent.parent / "karemramos_1184297046409691",  # Desde raíz del proyecto
+        Path("../data"),  # Backup en carpeta data desde backend
+        Path("./data"),   # Backup en carpeta data desde directorio actual
+        Path(__file__).parent.parent / "data"  # Backup en data desde raíz
     ]
     
     conversation_dir = None
@@ -774,7 +777,7 @@ def get_location():
 if __name__ == '__main__':
     # 🚀 Inicializar RAG Service al inicio
     print("\n" + "="*60)
-    print("🚀 Inicializando Romantic AI Proposal System v2.1")
+    print("🚀 Inicializando Romantic AI Proposal System v2.2")
     print("="*60)
     print(f"🏷️  Build: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
