@@ -342,7 +342,7 @@ const Dashboard = () => {
                     <div>
                       <p className="text-sm text-gray-600">Frases especiales:</p>
                       <p className="text-purple-600 text-sm italic">
-                        "{stats.aiInsights.unique_language.unique_phrases[0]}"
+                        &quot;{stats.aiInsights.unique_language.unique_phrases[0]}&quot;
                       </p>
                     </div>
                   )}
