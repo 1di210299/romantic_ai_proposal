@@ -744,8 +744,9 @@ def get_location():
 if __name__ == '__main__':
     # 🚀 Inicializar RAG Service al inicio
     print("\n" + "="*60)
-    print("🚀 Inicializando Romantic AI Proposal System")
+    print("🚀 Inicializando Romantic AI Proposal System v2.0")
     print("="*60)
+    print(f"🏷️  Build: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
     try:
         # Cargar todos los mensajes
