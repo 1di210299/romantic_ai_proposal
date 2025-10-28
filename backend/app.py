@@ -110,9 +110,40 @@ CONVERSATION_PATH = CONVERSATION_PATH.resolve()
 logger.info(f"📂 Ruta de conversación: {CONVERSATION_PATH}")
 print(f"📂 Ruta de conversación: {CONVERSATION_PATH}")
 
-# Global state (in production, use a database)
+# Global state with file persistence for production
 # Estructura: {session_id: {questions, current_index, answers, etc}}
 quiz_sessions = {}
+
+def load_quiz_sessions():
+    """Carga sesiones desde archivo para persistencia"""
+    global quiz_sessions
+    try:
+        sessions_file = Path('cache/quiz_sessions.json')
+        if sessions_file.exists():
+            with open(sessions_file, 'r', encoding='utf-8') as f:
+                quiz_sessions = json.load(f)
+            print(f"📂 {len(quiz_sessions)} sesiones cargadas desde cache")
+        else:
+            print("📂 No hay sesiones previas, iniciando limpio")
+    except Exception as e:
+        print(f"❌ Error cargando sesiones: {e}")
+        quiz_sessions = {}
+
+def save_quiz_sessions():
+    """Guarda sesiones en archivo para persistencia"""
+    try:
+        cache_dir = Path('cache')
+        cache_dir.mkdir(exist_ok=True)
+        sessions_file = cache_dir / 'quiz_sessions.json'
+        
+        with open(sessions_file, 'w', encoding='utf-8') as f:
+            json.dump(quiz_sessions, f, ensure_ascii=False, indent=2)
+        print(f"💾 {len(quiz_sessions)} sesiones guardadas en cache")
+    except Exception as e:
+        print(f"❌ Error guardando sesiones: {e}")
+
+# Cargar sesiones al iniciar
+load_quiz_sessions()
 
 
 def load_messages_sample(max_messages: int = 1000):
@@ -381,10 +412,18 @@ def generate_single_question_with_openai(messages: list, question_number: int, p
     # 📊 PASO 2: ANÁLISIS CONTEXTUAL ULTRA PROFUNDO
     print(f"🔬 Analizando {len(relevant_messages)} mensajes para encontrar contextos únicos e irrepetibles...")
     
-    # Filtrar mensajes por calidad y relevancia
+    # Filtrar mensajes por calidad, relevancia Y fecha (solo 2025)
     high_quality_messages = []
     for msg in relevant_messages:
         content = msg.get('content', '').strip()
+        # Verificar que el mensaje sea de 2025
+        timestamp = msg.get('timestamp', 0)
+        if timestamp > 0:
+            from datetime import datetime
+            msg_date = datetime.fromtimestamp(timestamp)
+            if msg_date.year != 2025:
+                continue  # Saltar mensajes que no sean del 2025
+        
         if len(content) > 10 and len(content) < 300:  # Mensajes de longitud óptima
             high_quality_messages.append(msg)
     
@@ -450,10 +489,12 @@ def generate_single_question_with_openai(messages: list, question_number: int, p
     dynamic_locations = [(word, count) for word, count in top_words if any(loc in word for loc in ['casa', 'parque', 'cine', 'restaurante', 'lugar', 'café', 'playa'])]
     
     # 📝 Crear contexto rico con mensajes reales detallados
-    # Ordenar mensajes por timestamp para obtener fechas correctas
-    sorted_messages = sorted(detailed_messages, key=lambda x: x.get('timestamp', 0))
-    first_date = sorted_messages[0]['date'] if sorted_messages else "fecha no disponible"
-    last_date = sorted_messages[-1]['date'] if sorted_messages else "fecha no disponible"
+    # Ordenar mensajes por timestamp para obtener fechas correctas (más reciente primero)
+    sorted_messages = sorted(detailed_messages, key=lambda x: x.get('timestamp', 0), reverse=True)
+    first_date = sorted_messages[-1]['date'] if sorted_messages else "fecha no disponible"  # Más antiguo
+    last_date = sorted_messages[0]['date'] if sorted_messages else "fecha no disponible"   # Más reciente
+    
+    print(f"📅 Rango de fechas: {first_date} hasta {last_date}")
     
     # PRIORIDAD 1: Incluir TODA la transcripción de momentos importantes
     examples_text = "🌹 HISTORIA COMPLETA DE MOMENTOS ROMÁNTICOS IMPORTANTES:\n"
@@ -993,6 +1034,9 @@ def start_quiz():
         "started_at": datetime.now().isoformat()
     }
     
+    # Guardar sesión para persistencia
+    save_quiz_sessions()
+    
     greeting = (
         f"Hola {user_name}.\n\n"
         f"He preparado {total_questions} preguntas basadas en nuestras conversaciones. "
@@ -1133,6 +1177,7 @@ def answer_question():
         if not next_question or not next_question.get('question'):
             # Sin fallbacks - finalizar quiz si no se puede generar siguiente pregunta
             session['completed'] = True
+            save_quiz_sessions()  # Persistir cambios
             return jsonify({
                 "success": False,
                 "error": "No se pudo generar la siguiente pregunta. Quiz finalizado.",
@@ -1180,6 +1225,9 @@ def answer_question():
                 "error": "No se pudo generar respuesta conversacional personalizada.",
                 "completed": True
             }), 500
+        
+        # Guardar cambios de sesión
+        save_quiz_sessions()
         
         return jsonify({
             "success": True,

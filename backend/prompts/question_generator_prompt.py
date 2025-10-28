@@ -48,13 +48,17 @@ DATOS REALES ANALIZADOS DE 33,622+ MENSAJES:
 📝 MENSAJES LITERALES QUE DEBES ANALIZAR PALABRA POR PALABRA:
 {examples_text if examples_text else '❌ CRÍTICO: NO HAY MENSAJES DISPONIBLES - NO PUEDES GENERAR PREGUNTAS SIN DATOS REALES'}
 
-⚠️ DATOS TEMPORALES: Los mensajes van hasta {last_date}. NO inventes fechas posteriores.
+⚠️ DATOS TEMPORALES CRÍTICOS: 
+- Relación comenzó en MARZO 2025
+- Los mensajes van hasta {last_date}
+- PROHIBIDO usar fechas de 2022, 2023, 2024 o anteriores
+- SOLO usar datos de 2025 (marzo-octubre)
 
 ❌ PREGUNTAS YA REALIZADAS (PROHIBIDO REPETIR):
 {previous_qs}
 
 🎯 MISIÓN CRÍTICA:
-Genera 1 PREGUNTA sobre MOMENTOS ROMÁNTICOS IMPORTANTES de la relación Juan Diego y Karem basada en su historia real (#{question_number} de 7).
+Genera 1 PREGUNTA sobre MOMENTOS ROMÁNTICOS IMPORTANTES de la relación Juan Diego y Karem basada EXCLUSIVAMENTE en datos del 2025 (#{question_number} de 7).
 
 🌹 ENFOQUE OBLIGATORIO: HITOS ROMÁNTICOS Y SIGNIFICATIVOS
 - Primeras veces (primer beso, primera cita, primer "te amo", etc.)
