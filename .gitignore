@@ -24,7 +24,7 @@ backend/cache/
 *.pkl
 *.bin
 *.cache
-
+sunat_scraper
 # Data personal (conversaciones privadas)
 # NO subir NINGÚN dato personal al repositorio
 karemramos_*/photos/

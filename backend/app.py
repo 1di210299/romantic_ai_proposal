@@ -83,7 +83,23 @@ def load_all_messages():
     
     all_messages = []
     
-    # Lista de rutas posibles para buscar los datos
+    # PRIMERO: Intentar cargar desde DigitalOcean Spaces
+    try:
+        from services.spaces_loader import load_messages_from_spaces
+        print("🌐 Intentando cargar desde DigitalOcean Spaces...")
+        
+        spaces_messages = load_messages_from_spaces()
+        if spaces_messages:
+            print(f"✅ {len(spaces_messages)} mensajes cargados desde Spaces")
+            return spaces_messages
+        else:
+            print("⚠️  Spaces no disponible, usando método local...")
+            
+    except Exception as e:
+        print(f"⚠️  Error con Spaces: {e}")
+        print("🔄 Continuando con búsqueda local...")
+    
+    # FALLBACK: Buscar archivos locales
     possible_paths = [
         Path(CONVERSATION_PATH),  # Ruta configurada
         Path("../karemramos_1184297046409691"),  # Relativa desde backend
@@ -777,7 +793,7 @@ def get_location():
 if __name__ == '__main__':
     # 🚀 Inicializar RAG Service al inicio
     print("\n" + "="*60)
-    print("🚀 Inicializando Romantic AI Proposal System v2.2")
+    print("🚀 Inicializando Romantic AI Proposal System v2.3 - Spaces Edition")
     print("="*60)
     print(f"🏷️  Build: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
