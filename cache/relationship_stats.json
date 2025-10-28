@@ -1,0 +1,47 @@
+{
+  "stats": {
+    "totalMessages": 33622,
+    "totalDays": 174,
+    "avgMessagesPerDay": 193.2,
+    "longestConversation": 1079,
+    "mostActiveHour": 0,
+    "sentimentScore": 8.5,
+    "relationshipPhases": [
+      {
+        "phase": "Inicio",
+        "messages": 6766,
+        "period": "2025-05 - 2025-06"
+      },
+      {
+        "phase": "Creciendo",
+        "messages": 15578,
+        "period": "2025-07 - 2025-08"
+      },
+      {
+        "phase": "Consolidación",
+        "messages": 11278,
+        "period": "2025-09 - 2025-10"
+      }
+    ],
+    "topEmojis": [
+      "❤️",
+      "😘",
+      "💜",
+      "😍",
+      "🥰"
+    ],
+    "specialMoments": 824,
+    "senderDistribution": {
+      "Juan Diego Gutierrez": 19804,
+      "Karem Ramos": 13818
+    },
+    "totalChars": 779831,
+    "totalWords": 149633,
+    "firstMessage": "2025-05-01",
+    "lastMessage": "2025-10-21",
+    "generated_at": "2025-10-28T02:16:22.520225",
+    "data_source": "real_json_analysis"
+  },
+  "cached_at": "2025-10-28T02:16:22.520378",
+  "cache_version": "1.0"
+}

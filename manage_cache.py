@@ -67,6 +67,25 @@ def get_cache_info():
             total_size += file.stat().st_size
     
     print(f"\n💾 Espacio total del cache: {total_size / 1024 / 1024:.1f} MB")
+    
+    # También mostrar información del cache de estadísticas
+    try:
+        from backend.services.stats_cache import get_stats_cache
+        stats_cache = get_stats_cache()
+        stats_info = stats_cache.get_cache_info()
+        
+        print("\n📊 Cache de Estadísticas")
+        print("-" * 30)
+        if stats_info['exists']:
+            print(f"📄 relationship_stats.json: {stats_info['size_mb']} MB")
+            print(f"   • Edad: {stats_info['age_hours']:.1f} horas")
+            print(f"   • Estado: {'✅ Válido' if stats_info['valid'] else '❌ Expirado'}")
+            if 'total_messages' in stats_info:
+                print(f"   • Mensajes analizados: {stats_info['total_messages']:,}")
+        else:
+            print("❌ Cache de estadísticas no encontrado")
+    except Exception as e:
+        print(f"\n⚠️  Error verificando cache de estadísticas: {e}")
 
 def clear_cache():
     """Limpia el cache completamente."""
@@ -77,6 +96,15 @@ def clear_cache():
         return
     
     print("🗑️  Limpiando cache...")
+    
+    # Limpiar cache de estadísticas también
+    try:
+        from backend.services.stats_cache import get_stats_cache
+        stats_cache = get_stats_cache()
+        stats_cache.clear_cache()
+        print("✅ Cache de estadísticas limpiado")
+    except Exception as e:
+        print(f"⚠️  Error limpiando cache de estadísticas: {e}")
     
     files_removed = 0
     for file in cache_dir.glob('*'):
@@ -130,14 +158,18 @@ def main():
         print("Uso: python manage_cache.py [comando]")
         print("")
         print("Comandos disponibles:")
-        print("  info     - Mostrar información del cache")
-        print("  clear    - Limpiar cache completo")
-        print("  backup   - Hacer backup del cache")
+        print("  info         - Mostrar información del cache")
+        print("  clear        - Limpiar cache completo")
+        print("  backup       - Hacer backup del cache")
+        print("  clear-stats  - Limpiar solo cache de estadísticas")
+        print("  pre-generate - Pre-generar estadísticas en cache")
         print("")
         print("Ejemplos:")
         print("  python manage_cache.py info")
         print("  python manage_cache.py clear")
         print("  python manage_cache.py backup")
+        print("  python manage_cache.py clear-stats")
+        print("  python manage_cache.py pre-generate")
         return
     
     command = sys.argv[1].lower()
@@ -152,11 +184,60 @@ def main():
             clear_cache()
         else:
             print("❌ Operación cancelada")
-    elif command == 'backup':
+    elif command == "backup":
         backup_cache()
+    elif command == "clear-stats":
+        clear_stats_cache()
+    elif command == "pre-generate":
+        pre_generate_stats()
     else:
         print(f"❌ Comando desconocido: {command}")
-        print("Comandos disponibles: info, clear, backup")
+        print("Usa: python manage_cache.py [info|clear|backup|clear-stats|pre-generate]")
+
+
+def clear_stats_cache():
+    """Limpia solo el cache de estadísticas."""
+    try:
+        from backend.services.stats_cache import get_stats_cache
+        stats_cache = get_stats_cache()
+        stats_cache.clear_cache()
+        print("✅ Cache de estadísticas limpiado")
+    except Exception as e:
+        print(f"❌ Error limpiando cache de estadísticas: {e}")
+
+
+def pre_generate_stats():
+    """Pre-genera estadísticas y las guarda en cache."""
+    print("🔄 Pre-generando estadísticas...")
+    
+    try:
+        # Importar función de análisis
+        from backend.app import analyze_conversation_data
+        from backend.services.stats_cache import get_stats_cache
+        
+        # Calcular estadísticas
+        stats = analyze_conversation_data()
+        
+        if stats:
+            # Guardar en cache
+            stats_cache = get_stats_cache()
+            stats_cache.save_stats_to_cache(stats)
+            
+            print("✅ Estadísticas pre-generadas y guardadas en cache")
+            print(f"   • Total mensajes: {stats.get('totalMessages', 0):,}")
+            print(f"   • Días analizados: {stats.get('totalDays', 0)}")
+            print(f"   • Score sentiment: {stats.get('sentimentScore', 0)}")
+        else:
+            print("❌ No se pudieron generar estadísticas")
+            
+    except Exception as e:
+        print(f"❌ Error pre-generando estadísticas: {e}")
+        import traceback
+        traceback.print_exc()
+
+
+if __name__ == "__main__":
+    main()
 
 if __name__ == '__main__':
     main()

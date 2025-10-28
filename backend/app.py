@@ -567,16 +567,39 @@ def analyze_conversation_data():
 
 @app.route('/api/relationship-stats', methods=['GET'])
 def get_relationship_stats():
-    """Generate relationship statistics from real conversation data"""
+    """Generate relationship statistics from real conversation data (with caching)"""
     try:
-        # Intentar análisis de datos reales
+        # 🚀 OPTIMIZACIÓN: Intentar cargar desde cache primero
+        from services.stats_cache import get_stats_cache
+        stats_cache = get_stats_cache()
+        
+        # Verificar si hay cache válido
+        cached_stats = stats_cache.get_cached_stats()
+        if cached_stats:
+            cached_stats["generated_at"] = datetime.now().isoformat()
+            cached_stats["data_source"] = "cached_analysis"
+            cached_stats["cache_hit"] = True
+            print("⚡ Estadísticas servidas desde cache")
+            return jsonify(cached_stats)
+        
+        # Si no hay cache válido, calcular estadísticas
+        print("📊 Cache no disponible, calculando estadísticas...")
         real_stats = analyze_conversation_data()
         
         if real_stats:
             real_stats["generated_at"] = datetime.now().isoformat()
             real_stats["data_source"] = "real_conversation_analysis"
+            real_stats["cache_hit"] = False
             if rag_service and hasattr(rag_service, 'chunk_texts'):
                 real_stats["rag_chunks"] = len(rag_service.chunk_texts)
+            
+            # 💾 Guardar en cache para próximas consultas
+            try:
+                stats_cache.save_stats_to_cache(real_stats)
+                print("✅ Estadísticas guardadas en cache")
+            except Exception as cache_error:
+                print(f"⚠️ Error guardando cache: {cache_error}")
+            
             return jsonify(real_stats)
         
         # Fallback: usar datos del RAG service si está disponible
@@ -584,7 +607,7 @@ def get_relationship_stats():
             total_chunks = len(rag_service.chunk_texts)
             estimated_messages = total_chunks * 5
             
-            return jsonify({
+            fallback_stats = {
                 "totalMessages": estimated_messages,
                 "totalDays": 800,  # Estimado
                 "avgMessagesPerDay": round(estimated_messages / 800, 1),
@@ -596,12 +619,21 @@ def get_relationship_stats():
                     {"phase": "Creciendo", "messages": int(estimated_messages * 0.4), "period": "Desarrollo"},
                     {"phase": "Consolidación", "messages": int(estimated_messages * 0.4), "period": "Actualidad"}
                 ],
-                "topEmojis": ['❤', '�', '💜', '�', '🌸'],
+                "topEmojis": ['❤', '😘', '💜', '😍', '🌸'],
                 "specialMoments": int(estimated_messages * 0.05),
                 "generated_at": datetime.now().isoformat(),
                 "data_source": "rag_estimation",
+                "cache_hit": False,
                 "rag_chunks": total_chunks
-            })
+            }
+            
+            # Guardar también el fallback en cache
+            try:
+                stats_cache.save_stats_to_cache(fallback_stats)
+            except:
+                pass
+            
+            return jsonify(fallback_stats)
         
         else:
             return jsonify({
@@ -613,6 +645,44 @@ def get_relationship_stats():
         return jsonify({
             "error": str(e),
             "data_source": "error_fallback"
+        }), 500
+
+
+@app.route('/api/cache/stats-info', methods=['GET'])
+def get_stats_cache_info():
+    """Obtiene información del cache de estadísticas"""
+    try:
+        from services.stats_cache import get_stats_cache
+        stats_cache = get_stats_cache()
+        
+        cache_info = stats_cache.get_cache_info()
+        return jsonify({
+            "cache_info": cache_info,
+            "success": True
+        })
+    except Exception as e:
+        return jsonify({
+            "error": str(e),
+            "success": False
+        }), 500
+
+
+@app.route('/api/cache/clear-stats', methods=['POST'])
+def clear_stats_cache():
+    """Limpia el cache de estadísticas para forzar recálculo"""
+    try:
+        from services.stats_cache import get_stats_cache
+        stats_cache = get_stats_cache()
+        
+        stats_cache.clear_cache()
+        return jsonify({
+            "message": "Cache de estadísticas limpiado",
+            "success": True
+        })
+    except Exception as e:
+        return jsonify({
+            "error": str(e),
+            "success": False
         }), 500
 
 

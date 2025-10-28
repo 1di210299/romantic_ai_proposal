@@ -46,9 +46,21 @@ const Dashboard = () => {
   if (loading || !stats) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-50 flex items-center justify-center">
-        <div className="text-center">
+        <div className="text-center max-w-md mx-auto">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-pink-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando análisis de conversaciones...</p>
+          <p className="text-gray-600 mb-2">Cargando análisis de conversaciones...</p>
+          <div className="text-sm text-gray-500">
+            {loading ? "Procesando datos..." : "Iniciando..."}
+          </div>
+          
+          {/* Indicador de progreso visual */}
+          <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
+            <div className="bg-gradient-to-r from-pink-400 to-rose-500 h-2 rounded-full animate-pulse" style={{width: "60%"}}></div>
+          </div>
+          
+          <div className="mt-4 text-xs text-gray-400">
+            💡 Tip: Las estadísticas se cargan más rápido después del primer acceso
+          </div>
         </div>
       </div>
     );
@@ -65,7 +77,14 @@ const Dashboard = () => {
                 <Heart className="text-pink-500" size={32} />
                 Para Karem Kiyomi Ramos
               </h1>
-              <p className="text-gray-600 mt-1">Análisis de nuestras conversaciones</p>
+              <p className="text-gray-600 mt-1">
+                Análisis de nuestras conversaciones
+                {stats.cache_hit && (
+                  <span className="ml-2 inline-flex items-center px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">
+                    ⚡ Carga rápida
+                  </span>
+                )}
+              </p>
             </div>
             <button
               onClick={() => window.location.href = '/chat'}
