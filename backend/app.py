@@ -300,6 +300,37 @@ def generate_single_question_with_openai(messages: list, question_number: int, p
         }
 
 
+# Health check endpoint for monitoring and Docker
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint for monitoring."""
+    try:
+        # Check if OpenAI API key is configured
+        api_key_status = "configured" if os.getenv('OPENAI_API_KEY') and os.getenv('OPENAI_API_KEY') != 'your_openai_api_key_here' else "missing"
+        
+        # Check if RAG service is initialized
+        rag_status = "initialized" if rag_service else "not_initialized"
+        
+        # Check if conversation data exists
+        data_status = "found" if CONVERSATION_PATH.exists() else "missing"
+        
+        return jsonify({
+            "status": "healthy",
+            "timestamp": datetime.now().isoformat(),
+            "openai_api": api_key_status,
+            "rag_service": rag_status,
+            "conversation_data": data_status,
+            "active_sessions": len(quiz_sessions)
+        }), 200
+    
+    except Exception as e:
+        return jsonify({
+            "status": "unhealthy",
+            "error": str(e),
+            "timestamp": datetime.now().isoformat()
+        }), 500
+
+
 @app.route('/api/start', methods=['POST'])
 @app.route('/api/start-quiz', methods=['POST'])  # Alias para compatibilidad con frontend
 def start_quiz():
@@ -729,6 +760,15 @@ if __name__ == '__main__':
         print("\n⚠️  El sistema continuará sin RAG, usando método básico.")
     
     # Iniciar servidor
-    port = int(os.getenv('PORT', 5001))
-    print(f"🌐 Servidor corriendo en http://localhost:{port}")
-    app.run(host='0.0.0.0', port=port, debug=app.config['DEBUG'])
+    port = int(os.getenv('BACKEND_PORT', os.getenv('PORT', 5000)))
+    host = os.getenv('HOST', '0.0.0.0')
+    
+    print(f"\n🌐 Servidor iniciando en http://{host}:{port}")
+    print(f"🔧 Modo debug: {app.config['DEBUG']}")
+    print(f"🔑 OpenAI API configurado: {'✅' if os.getenv('OPENAI_API_KEY') else '❌'}")
+    
+    if not os.getenv('OPENAI_API_KEY') or os.getenv('OPENAI_API_KEY') == 'your_openai_api_key_here':
+        print("⚠️  ADVERTENCIA: OpenAI API Key no configurado correctamente")
+        print("   Configura OPENAI_API_KEY en el archivo .env")
+    
+    app.run(host=host, port=port, debug=app.config['DEBUG'])
