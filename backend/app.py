@@ -370,20 +370,6 @@ def generate_single_question_with_openai(messages: list, question_number: int, p
 
 
 # Health check endpoint for monitoring and Docker
-@app.route('/', methods=['GET'])
-def root():
-    """Root endpoint - redirect to frontend"""
-    return jsonify({
-        "message": "Romantic AI Proposal Backend API",
-        "version": "2.4",
-        "status": "running",
-        "endpoints": {
-            "health": "/api/health",
-            "chat": "/api/chat",
-            "quiz": "/api/quiz/*"
-        }
-    })
-
 @app.route('/api/health', methods=['GET'])
 def health_check():
     """Health check endpoint for deployment verification"""
