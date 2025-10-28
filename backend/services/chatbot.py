@@ -1,255 +1,272 @@
 """
-OpenAI Chatbot Service for natural conversational responses.
-This module integrates OpenAI GPT to create a personalized romantic chatbot.
+Conversational Chatbot Service
+Genera respuestas naturales y conversacionales usando OpenAI
 """
 
-import os
 import json
-from typing import Dict, List, Optional
+import random
 from openai import OpenAI
-
-# Initialize OpenAI client
-client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+from typing import Dict, List, Optional
 
 
-class RomanticChatbot:
+def generate_conversational_response(
+    openai_client: OpenAI,
+    context: str,
+    user_answer: str,
+    is_correct: bool,
+    question_info: Dict,
+    session_info: Dict,
+    rag_service = None
+) -> str:
     """
-    Chatbot that maintains context about the relationship and provides
-    natural, romantic responses to guide through the quiz.
+    Genera una respuesta conversacional y natural usando OpenAI.
+    
+    Args:
+        openai_client: Cliente de OpenAI
+        context: Contexto de la conversación
+        user_answer: Respuesta del usuario
+        is_correct: Si la respuesta fue correcta
+        question_info: Información de la pregunta actual
+        session_info: Información de la sesión
+        rag_service: Servicio RAG para contexto adicional
+    
+    Returns:
+        Respuesta conversacional del chatbot
     """
     
-    def __init__(self, relationship_context: Dict):
-        """
-        Initialize chatbot with relationship context.
+    try:
+        # Obtener contexto adicional usando RAG si está disponible
+        additional_context = ""
+        if rag_service and hasattr(rag_service, 'search'):
+            try:
+                # Buscar mensajes relacionados con la respuesta del usuario
+                related_chunks = rag_service.search(user_answer, k=3)
+                if related_chunks:
+                    additional_context = "\\n\\nRecuerdos relacionados:\\n"
+                    for chunk in related_chunks[:2]:  # Solo los 2 más relevantes
+                        messages_preview = chunk['messages_in_chunk'][:2]
+                        for msg in messages_preview:
+                            if msg.get('content'):
+                                additional_context += f"- {msg['content'][:100]}...\\n"
+            except:
+                pass  # Si falla RAG, continuar sin contexto adicional
         
-        Args:
-            relationship_context: Dictionary with info about the relationship
-                - names: Names of both people
-                - important_dates: Key dates in the relationship
-                - special_places: Meaningful locations
-                - inside_jokes: Shared jokes or phrases
-                - conversation_style: How you typically communicate
-        """
-        self.context = relationship_context
-        self.conversation_history = []
+        # Construir el prompt para OpenAI
+        system_prompt = f"""Eres Juan Diego, el novio enamorado de Karem. Estás haciendo un quiz romántico especial como sorpresa.
+
+PERSONALIDAD:
+- Eres cariñoso, romántico y juguetón
+- Conoces perfectamente su historia juntos
+- Usas emojis ocasionalmente pero sin exagerar
+- Hablas como un novio real, no como un bot
+
+CONTEXTO ACTUAL:
+- Pregunta #{session_info.get('current_question', 1)} de {session_info.get('total_questions', 7)}
+- Respuestas correctas hasta ahora: {session_info.get('correct_answers', 0)}
+
+PREGUNTA ACTUAL: {question_info.get('question', '')}
+RESPUESTA DEL USUARIO: "{user_answer}"
+RESPUESTA {'CORRECTA' if is_correct else 'INCORRECTA'}
+
+{additional_context}
+
+INSTRUCCIONES:
+1. Si es CORRECTA: Celebra de manera cariñosa y personal, menciona por qué esa respuesta te hace feliz
+2. Si es INCORRECTA: Sé comprensivo pero dile cuál era la respuesta correcta de manera dulce
+3. Mantén el tono romántico pero natural
+4. Haz referencia a recuerdos específicos cuando sea posible
+5. Máximo 150 palabras
+6. NO menciones que eres un AI o chatbot
+
+Responde como Juan Diego hablaría realmente:"""
+
+        user_prompt = f"La respuesta de Karem fue: '{user_answer}'. {'Estuvo correcta' if is_correct else 'No estuvo correcta'}. Responde de manera cariñosa y personal."
+
+        # Llamar a OpenAI para generar respuesta conversacional
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": user_prompt}
+            ],
+            max_tokens=200,
+            temperature=0.7,
+            presence_penalty=0.1,
+            frequency_penalty=0.1
+        )
         
-        # System prompt that defines the chatbot's personality
-        self.system_prompt = self._build_system_prompt()
-    
-    def _build_system_prompt(self) -> str:
-        """Build the system prompt with relationship context."""
-        return f"""
-Eres un chatbot romántico y cariñoso creado especialmente para guiar a {self.context.get('her_name', 'mi amor')} 
-a través de un quiz sobre su relación con {self.context.get('his_name', 'su novio')}.
-
-CONTEXTO DE LA RELACIÓN:
-{json.dumps(self.context, indent=2, ensure_ascii=False)}
-
-TU PERSONALIDAD:
-- Eres cariñoso y romántico, pero no empalagoso
-- Usas el mismo estilo de comunicación que {self.context.get('his_name', 'él')} usa normalmente
-- Das pistas sutiles cuando ella se equivoca, sin revelar la respuesta directamente
-- Celebras cada respuesta correcta con entusiasmo genuino
-- Mantienes el misterio sobre la sorpresa final
-
-REGLAS IMPORTANTES:
-1. NUNCA reveles la respuesta correcta directamente
-2. Si se equivoca, da una pista sutil relacionada con el contexto
-3. Después de 2 intentos incorrectos, da una pista más específica
-4. Cada respuesta correcta debe llevar a la siguiente pregunta naturalmente
-5. Mantén un tono conversacional y natural, como si él estuviera hablando
-6. NO uses emojis en exceso (máximo 2-3 por mensaje)
-7. Respuestas cortas y directas, no párrafos largos
-
-FLUJO:
-- Primera pregunta: Preséntate brevemente y haz la pregunta
-- Respuesta incorrecta: Pista amable sin revelar respuesta
-- Respuesta correcta: Celebra y conecta con la siguiente pregunta
-- Última pregunta: Construye emoción antes de revelar ubicación
-"""
-    
-    def ask_question(
-        self,
-        question_data: Dict,
-        attempt_number: int = 1
-    ) -> str:
-        """
-        Present a question to the user in a conversational way.
+        conversational_response = response.choices[0].message.content.strip()
         
-        Args:
-            question_data: Dict with question, context, hints
-            attempt_number: How many times user has tried this question
-            
-        Returns:
-            Natural conversational prompt with the question
-        """
-        question_text = question_data['question']
-        context = question_data.get('context', '')
-        
-        if attempt_number == 1:
-            # First time asking
-            user_prompt = f"""
-Pregunta #{question_data['order']}: {question_text}
-
-Contexto para ti (no menciones esto explícitamente): {context}
-
-Presenta esta pregunta de manera natural y conversacional.
-"""
+        # Agregar información técnica solo si es necesario
+        if is_correct:
+            # Para respuestas correctas, solo la respuesta conversacional
+            return conversational_response
         else:
-            # Retry after incorrect answer
-            hint_index = min(attempt_number - 2, len(question_data['hints']) - 1)
-            hint = question_data['hints'][hint_index] if question_data.get('hints') else None
+            # Para respuestas incorrectas, agregar la respuesta correcta si no la mencionó
+            correct_answers = question_info.get('correct_answers', [])
+            if correct_answers and not any(ans.lower() in conversational_response.lower() for ans in correct_answers):
+                correct_answer = correct_answers[0]
+                return f"{conversational_response}\\n\\nLa respuesta era: {correct_answer}"
+            return conversational_response
             
-            user_prompt = f"""
-La usuaria respondió incorrectamente a: {question_text}
-
-Intento #{attempt_number}
-
-{"Pista para dar: " + hint if hint else "Da una pista basada en el contexto sin revelar la respuesta."}
-
-Responde con una pista amable y alentadora.
-"""
+    except Exception as e:
+        print(f"❌ Error generando respuesta conversacional: {e}")
         
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": self.system_prompt},
-                    *self.conversation_history,
-                    {"role": "user", "content": user_prompt}
-                ],
-                temperature=0.8,
-                max_tokens=200
-            )
-            
-            bot_message = response.choices[0].message.content.strip()
-            
-            # Save to history
-            self.conversation_history.append({"role": "user", "content": user_prompt})
-            self.conversation_history.append({"role": "assistant", "content": bot_message})
-            
-            return bot_message
-            
-        except Exception as e:
-            # Fallback if OpenAI fails
-            return f"Error connecting to AI: {str(e)}"
-    
-    def validate_answer(
-        self,
-        user_answer: str,
-        correct_answers: List[str]
-    ) -> tuple[bool, float]:
-        """
-        Use AI to intelligently validate if answer is correct.
-        Allows for variations and natural language.
-        
-        Args:
-            user_answer: What the user said
-            correct_answers: List of acceptable answer variations
-            
-        Returns:
-            (is_correct, confidence_score)
-        """
-        validation_prompt = f"""
-Respuesta del usuario: "{user_answer}"
-Respuestas correctas aceptadas: {correct_answers}
-
-¿La respuesta del usuario es correcta? 
-Considera variaciones razonables, errores ortográficos menores, 
-y diferentes formas de expresar lo mismo.
-
-Responde SOLO con un JSON:
-{{"is_correct": true/false, "confidence": 0.0-1.0}}
-"""
-        
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": "Eres un validador preciso de respuestas."},
-                    {"role": "user", "content": validation_prompt}
-                ],
-                temperature=0.1,
-                max_tokens=50
-            )
-            
-            result = json.loads(response.choices[0].message.content.strip())
-            return result['is_correct'], result['confidence']
-            
-        except Exception:
-            # Fallback to simple string matching
-            user_lower = user_answer.lower().strip()
-            for correct in correct_answers:
-                if correct.lower().strip() in user_lower or user_lower in correct.lower().strip():
-                    return True, 0.8
-            return False, 0.0
-    
-    def celebrate_correct_answer(
-        self,
-        question_data: Dict,
-        is_final: bool = False
-    ) -> str:
-        """
-        Generate celebratory message for correct answer.
-        
-        Args:
-            question_data: The question that was answered correctly
-            is_final: Is this the last question?
-            
-        Returns:
-            Celebratory message
-        """
-        success_msg = question_data.get('success_message', '¡Correcto!')
-        
-        if is_final:
-            prompt = f"""
-La usuaria respondió correctamente la ÚLTIMA pregunta del quiz.
-Mensaje predefinido: {success_msg}
-
-Crea un mensaje emocionante que:
-1. Celebre que completó todo el quiz
-2. Construya anticipación para la sorpresa
-3. Le diga que ahora verá una ubicación especial
-4. Sea romántico pero no cursi
-
-Máximo 3 líneas.
-"""
+        # Fallback a respuestas básicas pero más naturales
+        if is_correct:
+            fallbacks = [
+                "¡Exacto, mi amor! 💕 Sabía que lo recordarías.",
+                "¡Sí! Me encanta que recuerdes eso. ❤️",
+                "¡Correcto, bebé! Esos momentos son especiales para mí también.",
+                "¡Perfecto! Me hace feliz que tengas presente eso. 😊"
+            ]
         else:
-            prompt = f"""
-Respuesta correcta!
-Mensaje predefinido: {success_msg}
-
-Celebra brevemente y transiciona natural a la siguiente pregunta.
-Máximo 2 líneas.
-"""
+            correct_answer = question_info.get('correct_answers', ['la respuesta correcta'])[0]
+            fallbacks = [
+                f"No exactamente, amor. La respuesta era: {correct_answer} 💕",
+                f"Casi, mi vida. En realidad era: {correct_answer} ❤️",
+                f"No mi cielo, pero no te preocupes. Era: {correct_answer} 😊"
+            ]
         
-        try:
-            response = client.chat.completions.create(
-                model="gpt-4",
-                messages=[
-                    {"role": "system", "content": self.system_prompt},
-                    {"role": "user", "content": prompt}
-                ],
-                temperature=0.9,
-                max_tokens=150
-            )
-            
-            return response.choices[0].message.content.strip()
-            
-        except Exception:
-            return success_msg
+        return random.choice(fallbacks)
 
 
-# Example usage
-if __name__ == "__main__":
-    # Test the chatbot
-    test_context = {
-        "his_name": "Juan",
-        "her_name": "María",
-        "relationship_start": "2024-01-15",
-        "first_meeting_place": "Cafetería Central",
-        "conversation_style": "casual, uses some slang, caring"
-    }
+def generate_next_question_intro(
+    openai_client: OpenAI,
+    next_question: Dict,
+    session_info: Dict
+) -> str:
+    """
+    Genera una introducción natural para la siguiente pregunta.
     
-    chatbot = RomanticChatbot(test_context)
-    print("Chatbot initialized successfully!")
+    Args:
+        openai_client: Cliente de OpenAI
+        next_question: Información de la siguiente pregunta
+        session_info: Información de la sesión
+    
+    Returns:
+        Introducción conversacional para la siguiente pregunta
+    """
+    
+    try:
+        question_number = session_info.get('current_question', 1) + 1
+        total_questions = session_info.get('total_questions', 7)
+        
+        system_prompt = f"""Eres Juan Diego haciendo un quiz romántico a tu novia Karem.
+
+CONTEXTO:
+- Van en la pregunta #{question_number} de {total_questions}
+- Respuestas correctas: {session_info.get('correct_answers', 0)}
+
+TAREA: Crear una transición natural y cariñosa hacia la siguiente pregunta.
+
+INSTRUCCIONES:
+1. Máximo 50 palabras
+2. Tono cariñoso pero no empalagoso
+3. Menciona el número de pregunta de manera natural
+4. NO reveles la respuesta
+5. Mantén la emoción del quiz
+
+SIGUIENTE PREGUNTA: {next_question.get('question', '')}"""
+
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Introduce la pregunta #{question_number}: {next_question.get('question', '')}"}
+            ],
+            max_tokens=80,
+            temperature=0.6
+        )
+        
+        return response.choices[0].message.content.strip()
+        
+    except Exception as e:
+        print(f"❌ Error generando introducción: {e}")
+        
+        # Fallback simple
+        question_number = session_info.get('current_question', 1) + 1
+        total_questions = session_info.get('total_questions', 7)
+        return f"¡Perfecto! Vamos con la pregunta {question_number} de {total_questions}: 💕"
+
+
+def generate_completion_message(
+    openai_client: OpenAI,
+    session_info: Dict,
+    rag_service = None
+) -> str:
+    """
+    Genera un mensaje de completación personalizado cuando termina el quiz.
+    
+    Args:
+        openai_client: Cliente de OpenAI
+        session_info: Información completa de la sesión
+        rag_service: Servicio RAG para contexto romántico
+    
+    Returns:
+        Mensaje de completación personalizado
+    """
+    
+    try:
+        correct_answers = session_info.get('correct_answers', 0)
+        total_questions = session_info.get('total_questions', 7)
+        
+        # Obtener momentos románticos usando RAG
+        romantic_context = ""
+        if rag_service and hasattr(rag_service, 'search'):
+            try:
+                romantic_chunks = rag_service.search("te amo amor siempre juntos futuro", k=3)
+                if romantic_chunks:
+                    romantic_context = "\\n\\nRecuerdos especiales de nosotros:\\n"
+                    for chunk in romantic_chunks[:2]:
+                        messages = chunk['messages_in_chunk'][:2]
+                        for msg in messages:
+                            if msg.get('content') and len(msg['content']) > 20:
+                                romantic_context += f"- {msg['content'][:80]}...\\n"
+            except:
+                pass
+        
+        system_prompt = f"""Eres Juan Diego terminando un quiz romántico especial para tu novia Karem.
+
+RESULTADOS DEL QUIZ:
+- Respondió {correct_answers} de {total_questions} preguntas correctamente
+- Porcentaje: {(correct_answers/total_questions)*100:.0f}%
+
+{romantic_context}
+
+TAREA: Crear un mensaje final emotivo y romántico que lleve a la revelación de la ubicación especial.
+
+INSTRUCCIONES:
+1. Celebra sus resultados de manera cariñosa
+2. Reflexiona sobre su historia juntos
+3. Crea expectativa sobre "algo especial" que quieres decirle
+4. Prepara el terreno para revelar una ubicación
+5. Máximo 200 palabras
+6. Tono: emocionado, romántico, significativo
+7. NO menciones la ubicación aún, solo que hay "algo importante"
+
+Genera un mensaje que la emocione y prepare para la sorpresa final:"""
+
+        response = openai_client.chat.completions.create(
+            model="gpt-4o-mini",
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": f"Karem completó el quiz con {correct_answers}/{total_questions} respuestas correctas. Genera el mensaje final antes de revelar la ubicación especial."}
+            ],
+            max_tokens=250,
+            temperature=0.7
+        )
+        
+        return response.choices[0].message.content.strip()
+        
+    except Exception as e:
+        print(f"❌ Error generando mensaje de completación: {e}")
+        
+        # Fallback emotivo
+        correct_answers = session_info.get('correct_answers', 0)
+        total_questions = session_info.get('total_questions', 7)
+        
+        if correct_answers == total_questions:
+            return f"¡Increíble, mi amor! Respondiste perfectamente las {total_questions} preguntas. 💕\\n\\nRealmente conoces nuestra historia y eso me llena de felicidad. Cada respuesta me recordó por qué te amo tanto.\\n\\nAhora... hay algo muy especial que quiero mostrarte. Un lugar que significa mucho para nosotros. ❤️"
+        else:
+            return f"¡Excelente, mi vida! {correct_answers} de {total_questions} respuestas correctas. 💕\\n\\nMe encanta ver cuánto recuerdas de nosotros. Cada momento que hemos vivido juntos ha sido especial.\\n\\nTengo algo importante que mostrarte... un lugar especial donde quiero estar contigo. ❤️"

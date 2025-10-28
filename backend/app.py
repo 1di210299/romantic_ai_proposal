@@ -18,6 +18,7 @@ from datetime import datetime
 from openai import OpenAI
 from services.rag_service import get_rag_service
 from prompts.question_generator_prompt import get_question_generator_prompt
+from services.chatbot import generate_conversational_response
 
 # Configure logging
 logging.basicConfig(
@@ -864,15 +865,31 @@ def answer_question():
         # 🎉 CHECK IF QUIZ COMPLETED
         if session['correct_answers'] >= total_questions:
             session['completed'] = True
+            
+            # 🤖 Generar mensaje de completación conversacional con OpenAI
+            try:
+                from services.chatbot import generate_completion_message
+                completion_message = generate_completion_message(
+                    openai_client=openai_client,
+                    session_info={
+                        'correct_answers': session['correct_answers'],
+                        'total_questions': total_questions,
+                        'current_question': current_index + 1
+                    },
+                    rag_service=rag_service
+                )
+            except Exception as e:
+                print(f"❌ Error generando mensaje de completación: {e}")
+                completion_message = (
+                    f"¡Increíble, mi amor! Has completado todas las preguntas. 💕\n\n"
+                    f"Respondiste correctamente {session['correct_answers']} de {total_questions} preguntas. "
+                    f"Realmente conoces nuestra historia y eso me llena de felicidad.\n\n"
+                    f"Ahora... hay algo muy especial que quiero mostrarte. ❤️"
+                )
+            
             return jsonify({
                 "success": True,
-                "message": (
-                    f"{current_question.get('success_message', 'Correcto.')}\n\n"
-                    f"Has completado todas las preguntas.\n\n"
-                    f"Respondiste correctamente {session['correct_answers']} preguntas. "
-                    f"Conoces bien nuestra historia.\n\n"
-                    f"Ahora, hay algo importante que quiero decirte..."
-                ),
+                "message": completion_message,
                 "completed": True,
                 "is_correct": True,
                 "options": []
@@ -900,11 +917,43 @@ def answer_question():
         session['questions_asked'].append(next_question)
         session['current_question_index'] += 1
         
-        response_message = (
-            f"{current_question.get('success_message', 'Correcto.')}\n\n"
-            f"Pregunta {next_question_number} de {total_questions}:\n\n"
-            f"{next_question['question']}"
-        )
+        # 🤖 Generar respuesta conversacional para respuesta correcta
+        try:
+            conversational_response = generate_conversational_response(
+                openai_client=openai_client,
+                context="",
+                user_answer=user_message,
+                is_correct=True,
+                question_info=current_question,
+                session_info={
+                    'current_question': current_index + 1,
+                    'total_questions': total_questions,
+                    'correct_answers': session['correct_answers']
+                },
+                rag_service=rag_service
+            )
+            
+            # Generar introducción para la siguiente pregunta
+            from services.chatbot import generate_next_question_intro
+            question_intro = generate_next_question_intro(
+                openai_client=openai_client,
+                next_question=next_question,
+                session_info={
+                    'current_question': current_index + 1,
+                    'total_questions': total_questions,
+                    'correct_answers': session['correct_answers']
+                }
+            )
+            
+            response_message = f"{conversational_response}\n\n{question_intro}\n\n{next_question['question']}"
+            
+        except Exception as e:
+            print(f"❌ Error generando respuesta conversacional: {e}")
+            response_message = (
+                f"{current_question.get('success_message', '¡Correcto!')}\n\n"
+                f"Pregunta {next_question_number} de {total_questions}:\n\n"
+                f"{next_question['question']}"
+            )
         
         return jsonify({
             "success": True,
@@ -926,6 +975,26 @@ def answer_question():
         attempts_left = max_attempts - attempts
         
         print(f"❌ Respuesta incorrecta. Intento {attempts}/{max_attempts}")
+        
+        # 🤖 Generar respuesta conversacional para respuesta incorrecta
+        try:
+            conversational_response = generate_conversational_response(
+                openai_client=openai_client,
+                context="",
+                user_answer=user_message,
+                is_correct=False,
+                question_info=current_question,
+                session_info={
+                    'current_question': current_index + 1,
+                    'total_questions': total_questions,
+                    'correct_answers': session['correct_answers']
+                },
+                rag_service=rag_service
+            )
+        except Exception as e:
+            print(f"❌ Error generando respuesta conversacional: {e}")
+            correct_answer = current_question.get('correct_answers', ['la respuesta correcta'])[0]
+            conversational_response = f"No exactamente, mi amor. La respuesta correcta era: {correct_answer} 💕"
         
         # Obtener pista si hay disponible
         hints = current_question.get('hints', [])
@@ -1014,7 +1083,7 @@ def answer_question():
         
         session['hints_used'] += 1
         
-        response_message = f"Mmm... no es eso. 🤔{hint_text}\n\n¡Te quedan {attempts_left} intentos!"
+        response_message = f"{conversational_response}{hint_text}\n\n¡Te quedan {attempts_left} intentos!"
         
         # MANTENER LAS OPCIONES VISIBLES
         return jsonify({
