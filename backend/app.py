@@ -793,7 +793,7 @@ def get_location():
 if __name__ == '__main__':
     # 🚀 Inicializar RAG Service al inicio
     print("\n" + "="*60)
-    print("🚀 Inicializando Romantic AI Proposal System v2.3 - Spaces Edition")
+    print("🚀 Inicializando Romantic AI Proposal System v2.4 - Cache Persistente")
     print("="*60)
     print(f"🏷️  Build: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     

@@ -24,6 +24,32 @@ class SpacesDataLoader:
         print(f"📡 Descargando datos desde DigitalOcean Spaces...")
         print(f"🌐 URL base: {self.spaces_url}")
         
+        # Primero descargar archivos de cache (embeddings pre-calculados)
+        print(f"💾 Descargando cache pre-calculado...")
+        cache_dir = Path('cache')
+        cache_dir.mkdir(exist_ok=True)
+        
+        for cache_file in cache_files:
+            try:
+                cache_url = f"{self.spaces_url}/{cache_file}"
+                print(f"📥 Descargando {cache_file}...")
+                
+                response = requests.get(cache_url, timeout=60)
+                response.raise_for_status()
+                
+                # Guardar en cache directory
+                local_cache_file = cache_dir / cache_file
+                with open(local_cache_file, 'wb') as f:
+                    f.write(response.content)
+                
+                print(f"  ✅ Cache guardado: {local_cache_file} ({len(response.content) / 1024 / 1024:.1f}MB)")
+                
+            except Exception as e:
+                print(f"  ⚠️ Error descargando cache {cache_file}: {e}")
+        
+        # Luego descargar archivos JSON
+        print(f"📄 Descargando archivos JSON...")
+        
         for filename in files:
             try:
                 # URL completa del archivo
