@@ -19,6 +19,12 @@ dist/
 backend/.env
 frontend/.env.local
 
+# Credenciales sensibles
+.s3cfg
+*.key
+*.pem
+credentials/
+
 # Cache y archivos temporales del backend
 backend/cache/
 *.pkl

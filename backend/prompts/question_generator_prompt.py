@@ -13,7 +13,7 @@ def get_question_generator_prompt(
     question_number: int
 ) -> str:
     """
-    Generate the prompt for OpenAI to create quiz questions.
+    Generate the prompt for OpenAI to create ultra-specific and detailed quiz questions.
     
     Args:
         top_nicknames: List of (nickname, count) tuples
@@ -28,103 +28,121 @@ def get_question_generator_prompt(
         str: Complete prompt for OpenAI
     """
     
-    return f"""Eres un experto en crear preguntas personalizadas sobre relaciones románticas.
+    return f"""Eres un EXPERTO ANALISTA de conversaciones reales que debe crear preguntas ULTRA ESPECÍFICAS y DETALLADAS.
 
-DATOS REALES DE LA CONVERSACIÓN:
+🚨 REGLA ABSOLUTA: NO hay fallbacks, NO hay datos genéricos. TODO debe ser extraído LITERALMENTE de los mensajes reales.
 
-🏆 TOP APODOS POR FRECUENCIA (usa estos, están verificados):
-{chr(10).join([f"  - '{nick}': usado {count} veces" for nick, count in top_nicknames]) if top_nicknames else '  (ninguno encontrado)'}
+DATOS REALES ANALIZADOS DE 33,622+ MENSAJES:
 
-💕 TOP FRASES ROMÁNTICAS POR FRECUENCIA (usa estas, están verificadas):
-{chr(10).join([f"  - '{phrase}': dicha {count} veces" for phrase, count in top_phrases]) if top_phrases else '  (ninguna encontrada)'}
+� ANÁLISIS ESTADÍSTICO REAL:
 
-📍 TOP LUGARES MENCIONADOS (usa estos, están verificados):
-{chr(10).join([f"  - '{loc}': mencionado {count} veces" for loc, count in top_locations]) if top_locations else '  (ninguno encontrado)'}
+📊 APODOS REALES VERIFICADOS (FRECUENCIA EXACTA):
+{chr(10).join([f"  ✓ '{nick}': aparece {count} veces en mensajes reales" for nick, count in top_nicknames]) if top_nicknames else '  ❌ NO SE ENCONTRARON APODOS EN LOS MENSAJES - ABORTAR GENERACIÓN'}
 
-📝 EJEMPLOS LITERALES DE MENSAJES (DEBES USAR ESTOS):
-{examples_text if examples_text else '(no hay ejemplos disponibles)'}
+💕 FRASES ROMÁNTICAS VERIFICADAS (FRECUENCIA EXACTA):
+{chr(10).join([f"  ✓ '{phrase}': dicha {count} veces en conversaciones reales" for phrase, count in top_phrases]) if top_phrases else '  ❌ NO SE ENCONTRARON FRASES ROMÁNTICAS - ABORTAR GENERACIÓN'}
 
-⚠️ IMPORTANTE: Los datos van hasta {last_date}. NO preguntes sobre "hoy", "ayer" o fechas posteriores.
+📍 LUGARES REALES MENCIONADOS (FRECUENCIA EXACTA):
+{chr(10).join([f"  ✓ '{loc}': mencionado {count} veces en conversaciones" for loc, count in top_locations]) if top_locations else '  ❌ NO SE ENCONTRARON LUGARES - BUSCAR EN MENSAJES ESPECÍFICOS'}
 
-PREGUNTAS ANTERIORES (NO REPETIR temas ni categorías similares):
+📝 MENSAJES LITERALES QUE DEBES ANALIZAR PALABRA POR PALABRA:
+{examples_text if examples_text else '❌ CRÍTICO: NO HAY MENSAJES DISPONIBLES - NO PUEDES GENERAR PREGUNTAS SIN DATOS REALES'}
+
+⚠️ DATOS TEMPORALES: Los mensajes van hasta {last_date}. NO inventes fechas posteriores.
+
+❌ PREGUNTAS YA REALIZADAS (PROHIBIDO REPETIR):
 {previous_qs}
 
-TAREA:
-Genera 1 PREGUNTA GENERAL e INTERESANTE sobre la relación (#{question_number} de 7).
+🎯 MISIÓN CRÍTICA:
+Genera 1 PREGUNTA ULTRA ESPECÍFICA basada ÚNICAMENTE en análisis detallado de los mensajes literales (#{question_number} de 7).
 
-🎯 TIPO DE PREGUNTAS QUE QUEREMOS (VARIADAS Y GENERALES):
-- ✅ Momentos divertidos/graciosos que hayan compartido
-- ✅ Lugares o viajes que hayan mencionado
-- ✅ Comidas, restaurantes o gustos en común
-- ✅ Películas, series, música que les guste
-- ✅ Planes futuros o sueños juntos
-- ✅ Cómo superaron algo difícil
-- ✅ Sorpresas o detalles románticos
-- ✅ Primeras veces importantes (si están en mensajes)
+🔬 PROCESO DE ANÁLISIS OBLIGATORIO:
 
-🚫 EVITAR PREGUNTAS MUY ESPECÍFICAS:
-- ❌ "¿Cuántas veces dije 'te quiero'?" (muy específico)
-- ❌ "¿Cuál es el apodo exacto que uso?" (ya se preguntó mucho)
-- ❌ "¿Qué frase específica te digo?" (muy repetitivo)
-- ❌ Preguntas sobre conteos o datos imposibles de recordar
+1️⃣ LEE CADA MENSAJE LITERAL de arriba línea por línea
+2️⃣ IDENTIFICA patrones específicos, detalles únicos, contextos particulares
+3️⃣ EXTRAE datos precisos: nombres, lugares, fechas, situaciones específicas
+4️⃣ FORMULA pregunta que SOLO pueda responderse conociendo ESA conversación específica
 
-✅ EJEMPLOS DE BUENAS PREGUNTAS GENERALES (si están en los datos):
-- "¿Qué es lo que más te divierte de mí según nuestras conversaciones?"
-- "¿Cuál fue el lugar más especial que visitamos juntos?"
-- "¿Qué película o serie hemos visto juntos?"
-- "¿Cuál es nuestro plan más emocionante para el futuro?"
-- "¿Qué momento gracioso siempre recordamos?"
-- "¿Cuál fue la primera cosa especial que hicimos juntos?"
+🎯 CRITERIOS PARA PREGUNTAS ULTRA ESPECÍFICAS:
 
-REGLAS IMPORTANTES:
-1. Usa los mensajes de arriba para encontrar temas GENERALES (no detalles específicos)
-2. NO repitas categorías de preguntas anteriores (si ya preguntaste sobre apodos, NO hagas otra sobre apodos)
-3. Haz preguntas que sean MEMORABLES y divertidas de responder
-4. Las respuestas deben ser DIFERENTES a las de preguntas anteriores
-5. La pregunta debe tener 4 opciones variadas (1 correcta + 3 creíbles)
+✅ EXCELENTE - PREGUNTAS MUY DETALLADAS:
+- "¿En qué situación específica mencioné [detalle exacto del mensaje]?"
+- "¿Qué palabra/frase/detalle único uso cuando [contexto específico]?"
+- "¿Cuál fue mi reacción exacta cuando [evento específico mencionado]?"
+- "¿Qué detalle particular mencioné sobre [tema específico de mensajes]?"
 
-PROCESO:
-1. 📋 Revisa los "EJEMPLOS LITERALES DE MENSAJES" 
-2. 🔍 Identifica un TEMA GENERAL interesante (viajes, comida, momentos divertidos, etc.)
-3. ✍️ Crea una pregunta AMPLIA sobre ese tema
-4. ✅ Verifica que NO sea similar a preguntas anteriores
+❌ PROHIBIDO - PREGUNTAS GENÉRICAS:
+- "¿Cuál es tu comida favorita?" → Muy genérica
+- "¿Qué te gustaría hacer?" → Sin contexto específico
+- "¿Cómo nos conocimos?" → No está en los mensajes necesariamente
+- "¿Cuándo fue nuestra primera cita?" → Genérica
 
-EJEMPLOS DE BUENAS PREGUNTAS (GENERALES):
-✅ "¿Qué lugar especial hemos visitado juntos?" (si hay lugares mencionados)
-✅ "¿Cuál es una de nuestras películas favoritas?" (si mencionan películas)
-✅ "¿Qué plan tenemos para el futuro?" (si hablan de planes)
-✅ "¿Qué momento divertido siempre recordamos?" (si hay anécdotas graciosas)
+🔍 EJEMPLOS DE ANÁLISIS ULTRA ESPECÍFICO:
 
-EJEMPLOS INVÁLIDOS (MUY ESPECÍFICOS):
-❌ "¿Cuántas veces exactamente te dije 'te quiero'?" → Muy específico
-❌ "¿Cuál es el apodo exacto?" → Ya se preguntó antes
-❌ "¿Qué frase uso siempre?" → Muy repetitivo
+✅ PERFECTO - ANÁLISIS DETALLADO DE MENSAJES:
+➤ Si en mensajes dice "me reí mucho cuando dijiste que el gato parecía pizza" 
+   → "¿Con qué comparé al gato que te hizo reír muchísimo?"
+➤ Si menciona "ese día en el parque de los patos cuando llovió"
+   → "¿Qué pasó específicamente en el parque de los patos?"
+➤ Si dice "me encantó cuando me dijiste que mi sonrisa era como sol"
+   → "¿Con qué específicamente comparé tu sonrisa?"
 
-Responde SOLO en formato JSON válido:
+❌ INVÁLIDO - SIN ANÁLISIS ESPECÍFICO:
+➤ "¿Cuál es tu animal favorito?" → No hay análisis de mensajes
+➤ "¿Te gusta la lluvia?" → Pregunta genérica sin contexto
+➤ "¿Qué opinas de los parques?" → Sin detalles específicos
+
+🎯 REGLAS ABSOLUTAS (INCUMPLIR = FALLO):
+
+1️⃣ CADA PREGUNTA debe referenciar algo ESPECÍFICO encontrado en los mensajes literales
+2️⃣ PROHIBIDO inventar datos que no estén en los mensajes
+3️⃣ OBLIGATORIO citar el contexto específico en data_source
+4️⃣ Las opciones incorrectas deben ser creíbles pero claramente diferentes
+5️⃣ NO repetir ningún tema/categoría de preguntas anteriores
+
+🔬 PROCESO CIENTÍFICO OBLIGATORIO:
+
+PASO 1: ANÁLISIS PROFUNDO
+- Lee mensaje por mensaje buscando: nombres propios, situaciones únicas, detalles específicos, contextos particulares, reacciones específicas
+
+PASO 2: EXTRACCIÓN DE DATOS
+- Identifica: ¿Qué dijo exactamente? ¿En qué contexto? ¿Cuál fue la reacción? ¿Qué detalles únicos mencionó?
+
+PASO 3: FORMULACIÓN ESPECÍFICA  
+- Pregunta: Debe ser imposible responder sin conocer ESA conversación específica
+- Respuesta: Debe ser palabra/frase/detalle EXACTO del mensaje
+- Opciones: Alternativas creíbles pero distintas
+
+⚠️ FORMATO JSON OBLIGATORIO (sin markdown, sin explicaciones):
+
 {{
-  "question": "Pregunta GENERAL e INTERESANTE basada en los mensajes de arriba",
-  "category": "momentos_divertidos/viajes/gustos/planes_futuros/entretenimiento/general",
-  "difficulty": "medium",
-  "correct_answers": ["respuesta principal", "variación 1", "variación 2"],
+  "question": "Pregunta ULTRA ESPECÍFICA que requiere conocer detalles exactos de los mensajes analizados",
+  "category": "detalle_específico/situación_única/contexto_particular/referencia_exacta",
+  "difficulty": "hard", 
+  "correct_answers": ["respuesta exacta extraída del mensaje", "variación exacta si aplica"],
   "options": [
-    "Respuesta correcta basada en los mensajes",
-    "Opción incorrecta creíble",
-    "Opción incorrecta creíble", 
-    "Opción incorrecta creíble"
+    "Respuesta EXACTA copiada/parafraseada del mensaje literal",
+    "Opción incorrecta pero creíble en el contexto",
+    "Opción incorrecta pero creíble en el contexto", 
+    "Opción incorrecta pero creíble en el contexto"
   ],
   "hints": [
-    "Pista 1: Contexto general",
-    "Pista 2: Detalle más específico",
-    "Pista 3: Casi revelar la respuesta"
+    "Pista que guía hacia el contexto específico del mensaje",
+    "Pista más directa sobre la situación particular",
+    "Pista que casi revela la respuesta exacta"
   ],
-  "success_message": "¡Sí! [Confirma la respuesta de forma cariñosa y personal]",
-  "data_source": "Basado en ejemplos de mensajes donde se menciona [tema general]"
+  "success_message": "¡Perfecto! [Confirma con contexto específico del mensaje analizado]",
+  "data_source": "Mensaje literal del [fecha aproximada]: '[primera parte del mensaje específico encontrado]'"
 }}
 
-⚠️ VALIDACIÓN FINAL:
-- ¿Es una pregunta GENERAL y VARIADA? → Si es muy específica, cámbiala
-- ¿Es DIFERENTE a las preguntas anteriores? → Si es similar, elige otro tema
-- ¿Está basada en los mensajes? → Si no, ajústala
-- ¿Es MEMORABLE y divertida? → Si es aburrida, hazla más interesante
+🚨 VALIDACIÓN CRÍTICA ANTES DE RESPONDER:
 
-SOLO responde con el JSON, sin explicaciones adicionales."""
+✅ ¿EXTRAJE la pregunta de un mensaje literal específico?
+✅ ¿Es IMPOSIBLE responder sin conocer ESA conversación?
+✅ ¿La respuesta correcta está TEXTUALMENTE en los mensajes?
+✅ ¿Es COMPLETAMENTE diferente a preguntas anteriores?
+✅ ¿Cité específicamente qué mensaje/contexto analicé?
+
+❌ Si alguna respuesta es NO → REANALIZA los mensajes y reformula
+
+RESPONDE ÚNICAMENTE EL JSON. SIN explicaciones adicionales."""

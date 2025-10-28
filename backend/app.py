@@ -58,6 +58,42 @@ else:
 
 # RAG Service (inicializado después de cargar mensajes)
 rag_service = None
+_rag_initialized = False
+
+def ensure_rag_initialized():
+    """Asegura que el RAG service esté inicializado."""
+    global rag_service, _rag_initialized
+    
+    if _rag_initialized and rag_service is not None:
+        return rag_service
+    
+    try:
+        logger.info("📡 Inicializando RAG Service...")
+        print("📡 Inicializando RAG Service...")
+        
+        # Crear instancia del RAG service
+        rag_service = get_rag_service(os.getenv('OPENAI_API_KEY'))
+        
+        # Cargar mensajes y construir índice
+        all_messages = load_all_messages()
+        logger.info(f"📥 {len(all_messages)} mensajes cargados para RAG")
+        
+        # Construir índice (o cargar desde cache)
+        rag_service.build_index(all_messages, force_rebuild=False)
+        
+        # Mostrar estadísticas
+        stats = rag_service.get_statistics()
+        logger.info(f"✅ RAG inicializado - Chunks: {stats.get('total_chunks', 0):,}")
+        print(f"✅ RAG inicializado - {stats.get('total_chunks', 0):,} chunks")
+        
+        _rag_initialized = True
+        return rag_service
+        
+    except Exception as e:
+        logger.error(f"❌ Error inicializando RAG: {e}")
+        print(f"❌ Error inicializando RAG: {e}")
+        rag_service = None
+        return None
 
 # Conversation data path - resolver ruta absoluta
 CONVERSATION_PATH = os.getenv('CONVERSATION_DATA_PATH', '../karemramos_1184297046409691')
@@ -216,23 +252,32 @@ def generate_single_question_with_openai(messages: list, question_number: int, p
     Genera UNA pregunta específica usando OpenAI + RAG.
     Usa búsqueda semántica para encontrar contexto relevante en los mensajes.
     """
-    global rag_service
+    # Asegurar que RAG esté inicializado - OBLIGATORIO, sin fallbacks
+    current_rag = ensure_rag_initialized()
+    if not current_rag:
+        print("❌ RAG service no disponible - no se pueden generar preguntas sin datos reales")
+        return None
     
     print(f"🤖 Generando pregunta #{question_number} con OpenAI + RAG...")
     
-    # 🔍 PASO 1: Usar RAG para encontrar mensajes relevantes según el tipo de pregunta
-    # TEMAS DIVERSOS Y GENERALES para preguntas variadas sobre la relación
+    # 🔍 PASO 1: Temas ultra específicos para búsqueda contextual profunda
+    # CADA TEMA busca contextos únicos e irrepetibles de la relación  
     question_topics = [
-        "momento gracioso risa divertido chistoso",  # Pregunta 1 - Momentos divertidos
-        "viaje vacaciones salir pasear lugar",  # Pregunta 2 - Viajes y lugares
-        "comida favorita comer restaurante pizza",  # Pregunta 3 - Gustos/comida
-        "película serie Netflix ver juntos película favorita",  # Pregunta 4 - Entretenimiento
-        "sueño futuro planes juntos casarnos hijos",  # Pregunta 5 - Planes futuros
-        "pelea enojado discusión problema perdón",  # Pregunta 6 - Superación/conflictos
-        "sorpresa regalo detalle especial romántico",  # Pregunta 7 - Detalles románticos
-        "música canción artista bailar escuchar",  # Pregunta 8 - Música
-        "familia amigos conocer presentar",  # Pregunta 9 - Familia/social
-        "primera vez conocimos beso te amo",  # Pregunta 10 - Primeras veces
+        "jajaja risa chistoso gracioso divertido reír humor broma chiste",  # Momentos específicos de humor
+        "lugar salir ir vamos fuimos parque casa restaurante cine café",  # Lugares y experiencias específicas
+        "comida comer hambre desayuno almuerzo cena pizza hamburguesa",  # Contextos gastronómicos únicos
+        "película ver Netflix serie programa televisión película favorita",  # Entertainment específico visto
+        "futuro planes casarnos hijos familia sueños juntos siempre",  # Planes concretos mencionados
+        "problema enojado pelea discusión triste mal perdón disculpa",  # Conflictos y resoluciones específicas
+        "regalo sorpresa detalle especial romántico cumpleaños aniversario",  # Momentos románticos únicos
+        "canción música artista bailar escuchar spotify reproducir",  # Referencias musicales específicas
+        "amigos familia conocer presentar mamá papá hermana hermano",  # Contextos sociales/familiares
+        "primera vez beso te amo inicio conocimos empezamos",  # Hitos relacionales específicos
+        "trabajo estudios universidad clase profesor examen tarea",  # Contexto académico/profesional  
+        "viaje vacaciones playa montaña ciudad país avión carro",  # Experiencias de viaje específicas
+        "enfermo dolor cabeza medicina doctor hospital cuidar",  # Momentos de cuidado mutuo
+        "noche dormir sueño despertar mañana tarde madrugada",  # Rutinas y horarios específicos
+        "foto selfie imagen bonita hermosa guapo lindo",  # Contextos visuales/estéticos
     ]
     
     # Usar el índice exacto de la pregunta (sin rotar) para variedad
@@ -242,7 +287,7 @@ def generate_single_question_with_openai(messages: list, question_number: int, p
     print(f"🔍 Búsqueda RAG: '{search_query}'...")
     
     # Buscar chunks relevantes
-    relevant_chunks = rag_service.search(search_query, k=15)
+    relevant_chunks = current_rag.search(search_query, k=15)
     
     # Extraer todos los mensajes de los chunks relevantes
     relevant_messages = []
@@ -251,79 +296,96 @@ def generate_single_question_with_openai(messages: list, question_number: int, p
     
     print(f"📚 Encontrados {len(relevant_messages)} mensajes relevantes para el tema")
     
-    # 📊 PASO 2: Analizar los mensajes relevantes para extraer datos
-    dates = []
-    romantic_locations = []
-    nicknames = set()
-    romantic_phrases = []
-    nickname_counts = {}
-    phrase_counts = {}
-    location_counts = {}
-    message_examples = []
+    # 📊 PASO 2: ANÁLISIS CONTEXTUAL ULTRA PROFUNDO
+    print(f"🔬 Analizando {len(relevant_messages)} mensajes para encontrar contextos únicos e irrepetibles...")
+    
+    # Filtrar mensajes por calidad y relevancia
+    high_quality_messages = []
+    for msg in relevant_messages:
+        content = msg.get('content', '').strip()
+        if len(content) > 10 and len(content) < 300:  # Mensajes de longitud óptima
+            high_quality_messages.append(msg)
+    
+    print(f"📋 {len(high_quality_messages)} mensajes de alta calidad seleccionados para análisis profundo")
+    
+    # Recopilar todos los mensajes completos para análisis detallado
+    detailed_messages = []
+    word_frequency = {}
+    phrase_patterns = {}
+    unique_contexts = {}
     
     for msg in relevant_messages:
-        # Fechas específicas
-        if msg.get('timestamp_ms'):
-            date = datetime.fromtimestamp(msg['timestamp_ms'] / 1000).strftime('%d de %B de %Y')
-            dates.append(date)
-        
-        content = msg.get('content', '').lower()
+        content = msg.get('content', '')
         sender = msg.get('sender_name', 'Unknown')
+        timestamp = msg.get('timestamp_ms', 0)
         
-        # Guardar ejemplos literales de mensajes relevantes
-        if len(message_examples) < 20:
-            message_examples.append({
-                'sender': sender,
-                'content': msg.get('content', '')[:150],
-                'date': datetime.fromtimestamp(msg['timestamp_ms'] / 1000).strftime('%d/%m/%Y') if msg.get('timestamp_ms') else 'unknown'
-            })
+        if not content.strip():
+            continue
+            
+        date_str = datetime.fromtimestamp(timestamp / 1000).strftime('%d/%m/%Y %H:%M') if timestamp else 'fecha desconocida'
         
-        # Apodos y términos cariñosos - CONTAR FRECUENCIA
-        terms = ['amor', 'bebe', 'bb', 'mi vida', 'corazon', 'cielo', 'chapo', 'chapozita', 
-                 'princesa', 'rey', 'reina', 'tesoro', 'cariño', 'mi todo', 'mi mundo']
-        for term in terms:
-            if term in content:
-                nicknames.add(term)
-                nickname_counts[term] = nickname_counts.get(term, 0) + 1
+        # Guardar mensaje completo para análisis contextual
+        detailed_messages.append({
+            'sender': sender,
+            'content': content,
+            'date': date_str,
+            'timestamp': timestamp,
+            'length': len(content)
+        })
         
-        # Frases románticas - CONTAR FRECUENCIA
-        romantic_keywords = ['te amo', 'te quiero', 'te extraño', 'te necesito', 'mi amor', 
-                            'siempre juntos', 'para siempre', 'eres todo', 'eres mi vida']
-        for keyword in romantic_keywords:
-            if keyword in content:
-                romantic_phrases.append(keyword)
-                phrase_counts[keyword] = phrase_counts.get(keyword, 0) + 1
+        # Análisis de frecuencia de palabras (dinámico)
+        words = content.lower().split()
+        for word in words:
+            if len(word) > 2:  # Ignorar palabras muy cortas
+                word_frequency[word] = word_frequency.get(word, 0) + 1
         
-        # Lugares ROMÁNTICOS - CONTAR FRECUENCIA
-        places = ['parque', 'playa', 'cine', 'restaurante', 'nuestra casa', 'nuestro lugar',
-                  'mirador', 'café']
-        for place in places:
-            if place in content:
-                romantic_locations.append(place)
-                location_counts[place] = location_counts.get(place, 0) + 1
+        # Detectar patrones de frases (bigramas y trigramas)
+        for i in range(len(words) - 1):
+            bigram = ' '.join(words[i:i+2])
+            phrase_patterns[bigram] = phrase_patterns.get(bigram, 0) + 1
+            
+        for i in range(len(words) - 2):
+            trigram = ' '.join(words[i:i+3])
+            phrase_patterns[trigram] = phrase_patterns.get(trigram, 0) + 1
     
-    # Ordenar por frecuencia (más usados primero)
-    top_nicknames = sorted(nickname_counts.items(), key=lambda x: x[1], reverse=True)[:5]
-    top_phrases = sorted(phrase_counts.items(), key=lambda x: x[1], reverse=True)[:5]
-    top_locations = sorted(location_counts.items(), key=lambda x: x[1], reverse=True)[:3]
+    # Filtrar y ordenar por relevancia
+    significant_words = {word: count for word, count in word_frequency.items() 
+                        if count >= 2 and word not in ['que', 'para', 'con', 'por', 'una', 'del', 'las', 'los', 'pero', 'como', 'más', 'ser', 'hay', 'muy', 'fue', 'sus', 'son', 'ese', 'esa']}
     
-    # 📝 Crear contexto rico con datos reales
-    first_date = dates[0] if dates else "fecha no disponible"
-    last_date = dates[-1] if dates else "fecha no disponible"
+    significant_phrases = {phrase: count for phrase, count in phrase_patterns.items() 
+                          if count >= 2 and len(phrase.split()) >= 2}
     
-    # Formatear ejemplos literales
+    # Ordenar por frecuencia
+    top_words = sorted(significant_words.items(), key=lambda x: x[1], reverse=True)[:10]
+    top_phrases = sorted(significant_phrases.items(), key=lambda x: x[1], reverse=True)[:10]
+    
+    print(f"📈 Palabras más frecuentes: {[f'{word}({count})' for word, count in top_words[:5]]}")
+    print(f"📈 Frases más frecuentes: {[f'{phrase}({count})' for phrase, count in top_phrases[:3]]}")
+    
+    # Usar los nuevos datos dinámicos en lugar de hardcodeados
+    dynamic_nicknames = top_words  # Las palabras más frecuentes pueden incluir apodos
+    dynamic_phrases = top_phrases
+    dynamic_locations = [(word, count) for word, count in top_words if any(loc in word for loc in ['casa', 'parque', 'cine', 'restaurante', 'lugar', 'café', 'playa'])]
+    
+    # 📝 Crear contexto rico con mensajes reales detallados
+    # Ordenar mensajes por timestamp para obtener fechas correctas
+    sorted_messages = sorted(detailed_messages, key=lambda x: x.get('timestamp', 0))
+    first_date = sorted_messages[0]['date'] if sorted_messages else "fecha no disponible"
+    last_date = sorted_messages[-1]['date'] if sorted_messages else "fecha no disponible"
+    
+    # Formatear los mensajes más relevantes para análisis
     examples_text = "\n".join([
-        f"- [{ex['date']}] {ex['sender']}: \"{ex['content']}\""
-        for ex in message_examples
+        f"- [{msg['date']}] {msg['sender']}: \"{msg['content']}\""
+        for msg in detailed_messages[:15]  # Los primeros 15 mensajes más relevantes
     ])
     
     previous_qs = "\n".join([f"- {q.get('question', '')}" for q in (previous_questions or [])]) if previous_questions else "ninguna"
     
-    # 🤖 PASO 3: Generar prompt usando el módulo separado
+    # 🤖 PASO 3: Generar prompt usando análisis dinámico
     prompt = get_question_generator_prompt(
-        top_nicknames=top_nicknames,
-        top_phrases=top_phrases,
-        top_locations=top_locations,
+        top_nicknames=dynamic_nicknames,
+        top_phrases=dynamic_phrases,
+        top_locations=dynamic_locations,
         examples_text=examples_text,
         last_date=last_date,
         previous_qs=previous_qs,
@@ -383,17 +445,9 @@ def generate_single_question_with_openai(messages: list, question_number: int, p
         import traceback
         traceback.print_exc()
         
-        # Fallback: pregunta genérica si falla la IA
-        return {
-            "question": "¿Cuál es uno de los apodos cariñosos que usamos?",
-            "options": ["amor", "cielo", "vida", "corazón"],
-            "correct_answers": ["amor", "mi amor"],
-            "hints": ["Lo digo muy seguido...", "Es el más común...", "A-M-O-R"],
-            "success_message": "Así es. Es el apodo que más usamos.",
-            "category": "apodos",
-            "difficulty": "easy",
-            "data_source": "Fallback: pregunta genérica"
-        }
+        # Sin fallbacks - retornar None si falla
+        print("❌ No se pudo generar pregunta - sin fallbacks disponibles")
+        return None
 
 
 # Health check endpoint for monitoring and Docker
@@ -402,8 +456,9 @@ def health_check():
     """Health check endpoint for deployment verification"""
     logger.info("🔍 Health check endpoint called")
     try:
-        rag_enabled = rag_service is not None
-        total_messages = len(rag_service.chunk_texts) if rag_service else 0
+        current_rag = ensure_rag_initialized()
+        rag_enabled = current_rag is not None
+        total_messages = len(current_rag.chunk_texts) if current_rag else 0
         
         logger.info(f"✅ Health check successful - RAG: {rag_enabled}, Messages: {total_messages}")
         
@@ -568,84 +623,168 @@ def analyze_conversation_data():
 
 @app.route('/api/relationship-stats', methods=['GET'])
 def get_relationship_stats():
-    """Generate relationship statistics from real conversation data (with caching)"""
+    """Generate relationship statistics from real conversation data (with enhanced AI analysis)"""
     try:
-        # 🚀 OPTIMIZACIÓN: Intentar cargar desde cache primero
-        from services.stats_cache import get_stats_cache
-        stats_cache = get_stats_cache()
+        # Verificar si se solicita análisis forzado
+        force_analysis = request.args.get('force', 'false').lower() == 'true'
         
-        # Verificar si hay cache válido
-        cached_stats = stats_cache.get_cached_stats()
-        if cached_stats:
-            cached_stats["generated_at"] = datetime.now().isoformat()
-            cached_stats["data_source"] = "cached_analysis"
-            cached_stats["cache_hit"] = True
-            print("⚡ Estadísticas servidas desde cache")
-            return jsonify(cached_stats)
+        # 🚀 OPTIMIZACIÓN: Intentar cargar desde cache primero (si no es forzado)
+        if not force_analysis:
+            from services.stats_cache import get_stats_cache
+            stats_cache = get_stats_cache()
+            
+            # Verificar cache mejorado primero
+            enhanced_cache_file = Path("../cache/enhanced_relationship_stats.json")
+            if enhanced_cache_file.exists():
+                try:
+                    with open(enhanced_cache_file, 'r', encoding='utf-8') as f:
+                        cache_data = json.load(f)
+                    
+                    cached_at = datetime.fromisoformat(cache_data.get('cached_at', ''))
+                    age_hours = (datetime.now() - cached_at).total_seconds() / 3600
+                    
+                    if age_hours <= 24:  # Cache válido por 24 horas
+                        enhanced_stats = cache_data.get('stats', {})
+                        enhanced_stats["cache_hit"] = True
+                        enhanced_stats["cache_age_hours"] = round(age_hours, 1)
+                        print(f"⚡ Estadísticas mejoradas servidas desde cache ({age_hours:.1f}h)")
+                        return jsonify(enhanced_stats)
+                except Exception as e:
+                    print(f"⚠️ Error leyendo cache mejorado: {e}")
+            
+            # Verificar cache tradicional
+            cached_stats = stats_cache.get_cached_stats()
+            if cached_stats:
+                cached_stats["generated_at"] = datetime.now().isoformat()
+                cached_stats["data_source"] = "cached_analysis"
+                cached_stats["cache_hit"] = True
+                print("⚡ Estadísticas tradicionales servidas desde cache")
+                return jsonify(cached_stats)
         
-        # Si no hay cache válido, calcular estadísticas
-        print("📊 Cache no disponible, calculando estadísticas...")
+        # Usar análisis mejorado con IA
+        print("🤖 Ejecutando análisis mejorado con IA...")
+        try:
+            # Importar y ejecutar el analizador mejorado
+            sys.path.append('..')
+            from enhanced_stats_analyzer import EnhancedStatsAnalyzer
+            
+            analyzer = EnhancedStatsAnalyzer()
+            enhanced_stats = analyzer.generate_enhanced_stats()
+            
+            if enhanced_stats:
+                enhanced_stats["cache_hit"] = False
+                enhanced_stats["analysis_type"] = "enhanced_ai_powered"
+                print("✅ Análisis mejorado completado")
+                return jsonify(enhanced_stats)
+                
+        except ImportError as e:
+            print(f"⚠️ No se pudo importar analizador mejorado: {e}")
+        except Exception as e:
+            print(f"⚠️ Error en análisis mejorado: {e}")
+            import traceback
+            traceback.print_exc()
+        
+        # Fallback al análisis tradicional
+        print("📊 Fallback a análisis tradicional...")
         real_stats = analyze_conversation_data()
         
         if real_stats:
             real_stats["generated_at"] = datetime.now().isoformat()
-            real_stats["data_source"] = "real_conversation_analysis"
+            real_stats["data_source"] = "traditional_analysis"
             real_stats["cache_hit"] = False
-            if rag_service and hasattr(rag_service, 'chunk_texts'):
-                real_stats["rag_chunks"] = len(rag_service.chunk_texts)
-            
-            # 💾 Guardar en cache para próximas consultas
-            try:
-                stats_cache.save_stats_to_cache(real_stats)
-                print("✅ Estadísticas guardadas en cache")
-            except Exception as cache_error:
-                print(f"⚠️ Error guardando cache: {cache_error}")
+            current_rag = ensure_rag_initialized()
+            if current_rag and hasattr(current_rag, 'chunk_texts'):
+                real_stats["rag_chunks"] = len(current_rag.chunk_texts)
             
             return jsonify(real_stats)
         
-        # Fallback: usar datos del RAG service si está disponible
-        elif rag_service and hasattr(rag_service, 'chunk_texts'):
-            total_chunks = len(rag_service.chunk_texts)
+        # Fallback final: estimación basada en RAG
+        current_rag = ensure_rag_initialized()
+        if current_rag and hasattr(current_rag, 'chunk_texts'):
+            total_chunks = len(current_rag.chunk_texts)
             estimated_messages = total_chunks * 5
             
             fallback_stats = {
                 "totalMessages": estimated_messages,
-                "totalDays": 800,  # Estimado
+                "totalDays": 800,
                 "avgMessagesPerDay": round(estimated_messages / 800, 1),
-                "longestConversation": 150,
-                "mostActiveHour": 20,
-                "sentimentScore": 8.5,
+                "connectionScore": 8.5,
+                "avgResponseTime": "15min",
                 "relationshipPhases": [
                     {"phase": "Inicio", "messages": int(estimated_messages * 0.2), "period": "Primeros meses"},
                     {"phase": "Creciendo", "messages": int(estimated_messages * 0.4), "period": "Desarrollo"},
                     {"phase": "Consolidación", "messages": int(estimated_messages * 0.4), "period": "Actualidad"}
                 ],
-                "topEmojis": ['❤', '😘', '💜', '😍', '🌸'],
+                "topEmojis": ['❤️', '😘', '💜', '😍', '🥰'],
                 "specialMoments": int(estimated_messages * 0.05),
                 "generated_at": datetime.now().isoformat(),
-                "data_source": "rag_estimation",
+                "data_source": "rag_estimation_fallback",
                 "cache_hit": False,
                 "rag_chunks": total_chunks
             }
             
-            # Guardar también el fallback en cache
-            try:
-                stats_cache.save_stats_to_cache(fallback_stats)
-            except:
-                pass
-            
             return jsonify(fallback_stats)
         
-        else:
-            return jsonify({
-                "error": "No conversation data available",
-                "message": "Neither real data analysis nor RAG service is available"
-            }), 503
+        # Sin datos disponibles
+        return jsonify({
+            "error": "No conversation data available",
+            "message": "No analysis method succeeded"
+        }), 503
             
     except Exception as e:
         return jsonify({
             "error": str(e),
             "data_source": "error_fallback"
+        }), 500
+
+@app.route('/api/relationship-stats/regenerate', methods=['POST'])
+def regenerate_relationship_stats():
+    """Fuerza la regeneración de estadísticas con análisis mejorado"""
+    try:
+        print("🔄 Forzando regeneración de estadísticas mejoradas...")
+        
+        # Importar y ejecutar el analizador mejorado
+        sys.path.append('..')
+        from enhanced_stats_analyzer import EnhancedStatsAnalyzer
+        
+        analyzer = EnhancedStatsAnalyzer()
+        enhanced_stats = analyzer.generate_enhanced_stats()
+        
+        if enhanced_stats:
+            enhanced_stats["cache_hit"] = False
+            enhanced_stats["regenerated_at"] = datetime.now().isoformat()
+            enhanced_stats["analysis_type"] = "enhanced_ai_forced_regeneration"
+            
+            # Limpiar cache antiguo
+            try:
+                from services.stats_cache import get_stats_cache
+                stats_cache = get_stats_cache()
+                stats_cache.clear_cache()
+                print("🗑️ Cache anterior limpiado")
+            except:
+                pass
+            
+            print("✅ Estadísticas regeneradas exitosamente")
+            return jsonify({
+                "success": True,
+                "message": "Estadísticas regeneradas con análisis mejorado",
+                "stats": enhanced_stats
+            })
+        else:
+            return jsonify({
+                "success": False,
+                "error": "No se pudieron generar estadísticas mejoradas"
+            }), 500
+            
+    except Exception as e:
+        print(f"❌ Error regenerando estadísticas: {e}")
+        import traceback
+        traceback.print_exc()
+        
+        return jsonify({
+            "success": False,
+            "error": str(e),
+            "message": "Error durante la regeneración de estadísticas"
         }), 500
 
 
@@ -722,11 +861,12 @@ def start_quiz():
     print(f"🎯 Nueva sesión iniciada: {session_id}")
     print(f"{'='*60}")
     
-    # Verificar que RAG esté inicializado
-    if not rag_service:
+    # Asegurar que RAG esté inicializado
+    current_rag = ensure_rag_initialized()
+    if not current_rag:
         return jsonify({
             "success": False,
-            "error": "El sistema RAG no está inicializado. Reinicie el servidor."
+            "error": "No se pudo inicializar el sistema RAG. Verifique la configuración."
         }), 500
     
     # 🤖 Generar primera pregunta con OpenAI + RAG
@@ -742,13 +882,10 @@ def start_quiz():
     )
     
     if not first_question or not first_question.get('question'):
-        first_question = {
-            "question": "¿Cuál es el apodo que más uso para llamarte?",
-            "options": ["amor", "cielo", "vida", "bebé"],
-            "correct_answers": ["amor", "mi amor"],
-            "hints": ["Lo digo muy seguido...", "Es el más común...", "A-M-O-R"],
-            "success_message": "Correcto. Ese es el apodo que más uso."
-        }
+        return jsonify({
+            "success": False,
+            "error": "No se pudo generar la primera pregunta. Sistema RAG requerido para preguntas personalizadas."
+        }), 500
     
     # Inicializar sesión
     quiz_sessions[session_id] = {
@@ -880,12 +1017,11 @@ def answer_question():
                 )
             except Exception as e:
                 print(f"❌ Error generando mensaje de completación: {e}")
-                completion_message = (
-                    f"¡Increíble, mi amor! Has completado todas las preguntas. 💕\n\n"
-                    f"Respondiste correctamente {session['correct_answers']} de {total_questions} preguntas. "
-                    f"Realmente conoces nuestra historia y eso me llena de felicidad.\n\n"
-                    f"Ahora... hay algo muy especial que quiero mostrarte. ❤️"
-                )
+                return jsonify({
+                    "success": False,
+                    "error": "No se pudo generar mensaje de completación personalizado.",
+                    "completed": True
+                }), 500
             
             return jsonify({
                 "success": True,
@@ -906,13 +1042,14 @@ def answer_question():
         )
         
         if not next_question or not next_question.get('question'):
-            next_question = {
-                "question": "¿Qué es lo que más te gusta de nuestra relación?",
-                "options": ["Todo", "Tu amor", "Nuestra conexión", "Nuestros momentos"],
-                "correct_answers": ["todo", "tu amor", "nuestra conexión", "nuestros momentos"],
-                "hints": ["Piensa en lo especial que somos...", "Es todo...", "TODO"],
-                "success_message": "Así es. Valoro mucho lo que tenemos."
-            }
+            # Sin fallbacks - finalizar quiz si no se puede generar siguiente pregunta
+            session['completed'] = True
+            return jsonify({
+                "success": False,
+                "error": "No se pudo generar la siguiente pregunta. Quiz finalizado.",
+                "completed": True,
+                "message": "El quiz ha terminado debido a problemas técnicos."
+            }), 500
         
         session['questions_asked'].append(next_question)
         session['current_question_index'] += 1
@@ -949,11 +1086,11 @@ def answer_question():
             
         except Exception as e:
             print(f"❌ Error generando respuesta conversacional: {e}")
-            response_message = (
-                f"{current_question.get('success_message', '¡Correcto!')}\n\n"
-                f"Pregunta {next_question_number} de {total_questions}:\n\n"
-                f"{next_question['question']}"
-            )
+            return jsonify({
+                "success": False,
+                "error": "No se pudo generar respuesta conversacional personalizada.",
+                "completed": True
+            }), 500
         
         return jsonify({
             "success": True,
@@ -1042,13 +1179,13 @@ def answer_question():
             )
             
             if not new_question or not new_question.get('question'):
-                new_question = {
-                    "question": "¿Cuál fue nuestro primer lugar especial juntos?",
-                    "options": ["La universidad", "Un parque", "Un café", "El cine"],
-                    "correct_answers": ["universidad", "u", "la u"],
-                    "hints": ["Pasamos mucho tiempo ahí...", "Es donde estudiamos...", "La U"],
-                    "success_message": "Correcto. La universidad es un lugar importante para nosotros."
-                }
+                # Sin fallbacks - finalizar quiz
+                session['completed'] = True
+                return jsonify({
+                    "success": False,
+                    "error": "No se pudo generar pregunta de reemplazo. Quiz finalizado.",
+                    "completed": True
+                }), 500
             
             session['questions_asked'].append(new_question)
             session['current_question_index'] += 1
