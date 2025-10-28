@@ -116,9 +116,9 @@ class RAGService:
         
         return np.array(all_embeddings, dtype=np.float32)
     
-    def build_index(self, messages: List[Dict], force_rebuild: bool = False):
+    def build_index(self, messages: List[Dict], force_rebuild: bool = False, priority_messages: List[Dict] = None):
         """
-        Construye el índice FAISS con todos los mensajes.
+        Construye el índice FAISS con todos los mensajes, incluyendo chunks prioritarios.
         Si existe cache, lo carga. Si no, genera embeddings nuevos.
         """
         # Intentar cargar cache
@@ -138,14 +138,33 @@ class RAGService:
                 print(f"⚠️ Error cargando cache: {e}. Reconstruyendo...")
         
         # Construir índice desde cero
-        print(f"🏗️ Construyendo índice FAISS para {len(messages)} mensajes...")
+        total_messages = len(messages) + (len(priority_messages) if priority_messages else 0)
+        print(f"🏗️ Construyendo índice FAISS para {total_messages} mensajes...")
         
-        # 1. Crear chunks de mensajes
-        chunks = self._create_message_chunks(messages, chunk_size=5)
-        self.messages_metadata = chunks
+        # 1. Procesar chunks prioritarios primero (si existen)
+        priority_chunks = []
+        if priority_messages:
+            print(f"🎯 Procesando {len(priority_messages)} chunks prioritarios...")
+            for priority_msg in priority_messages:
+                priority_chunk = {
+                    'text': priority_msg['content'],
+                    'messages_in_chunk': [priority_msg],
+                    'date_range': priority_msg['metadata'].get('period', 'priority'),
+                    'message_count': 1,
+                    'priority_score': priority_msg.get('priority_score', 10),
+                    'type': 'priority_transcription'
+                }
+                priority_chunks.append(priority_chunk)
         
-        # 2. Extraer textos para embeddings
-        chunk_texts = [chunk['text'] for chunk in chunks]
+        # 2. Crear chunks de mensajes regulares
+        regular_chunks = self._create_message_chunks(messages, chunk_size=5)
+        
+        # 3. Combinar chunks (prioritarios primero)
+        all_chunks = priority_chunks + regular_chunks
+        self.messages_metadata = all_chunks
+        
+        # 4. Extraer textos para embeddings
+        chunk_texts = [chunk['text'] for chunk in all_chunks]
         self.chunk_texts = chunk_texts  # Guardar para compatibilidad con app.py
         
         # 3. Generar embeddings en batch

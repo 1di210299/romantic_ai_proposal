@@ -91,7 +91,48 @@ class SpacesDataLoader:
             except Exception as e:
                 print(f"  ❌ Error procesando {filename}: {e}")
         
-        print(f"📊 Total mensajes cargados desde Spaces: {len(all_messages)}")
+        print(f"🎯 Total de mensajes cargados: {len(all_messages)}")
+        return all_messages
+    
+    def download_priority_transcription(self):
+        """Descarga y procesa los chunks prioritarios de la transcripción"""
+        try:
+            transcription_url = f"{self.spaces_url}/priority_transcription.json"
+            print(f"📚 Descargando chunks prioritarios de transcripción...")
+            
+            response = requests.get(transcription_url, timeout=30)
+            response.raise_for_status()
+            
+            # Guardar en cache local
+            cache_file = self.cache_dir / "priority_transcription.json"
+            with open(cache_file, 'wb') as f:
+                f.write(response.content)
+            
+            # Parsear datos prioritarios
+            priority_data = json.loads(response.content)
+            chunks = priority_data.get('chunks', [])
+            
+            print(f"  ✅ {len(chunks)} chunks prioritarios cargados")
+            
+            # Convertir chunks a formato de mensajes para RAG
+            priority_messages = []
+            for chunk in chunks:
+                priority_message = {
+                    'content': chunk['content'],
+                    'timestamp_ms': 0,  # Prioridad máxima
+                    'sender_name': 'PRIORITY_HISTORY',
+                    'type': 'priority_chunk',
+                    'metadata': chunk['metadata'],
+                    'priority_score': chunk['metadata'].get('priority_score', 10)
+                }
+                priority_messages.append(priority_message)
+            
+            print(f"🚀 Chunks prioritarios listos para RAG")
+            return priority_messages
+            
+        except Exception as e:
+            print(f"❌ Error cargando chunks prioritarios: {e}")
+            return []
         return all_messages
     
     def test_connection(self):

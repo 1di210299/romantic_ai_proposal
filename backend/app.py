@@ -74,12 +74,18 @@ def ensure_rag_initialized():
         # Crear instancia del RAG service
         rag_service = get_rag_service(os.getenv('OPENAI_API_KEY'))
         
-        # Cargar mensajes y construir índice
+        # Cargar mensajes regulares
         all_messages = load_all_messages()
         logger.info(f"📥 {len(all_messages)} mensajes cargados para RAG")
         
-        # Construir índice (o cargar desde cache)
-        rag_service.build_index(all_messages, force_rebuild=False)
+        # Cargar chunks prioritarios de transcripción
+        from services.spaces_loader import SpacesDataLoader
+        spaces_loader = SpacesDataLoader()
+        priority_messages = spaces_loader.download_priority_transcription()
+        logger.info(f"🎯 {len(priority_messages)} chunks prioritarios cargados")
+        
+        # Construir índice (o cargar desde cache) con prioridades
+        rag_service.build_index(all_messages, force_rebuild=False, priority_messages=priority_messages)
         
         # Mostrar estadísticas
         stats = rag_service.get_statistics()
@@ -228,8 +234,63 @@ def load_all_messages():
         except Exception as e:
             print(f"⚠️  Error leyendo {msg_file.name}: {e}")
     
+    # Agregar archivos adicionales de transcripción e historia
+    additional_messages = load_additional_story_files()
+    all_messages.extend(additional_messages)
+    
     print(f"✅ {len(all_messages)} mensajes totales cargados para RAG")
     return all_messages
+
+
+def load_additional_story_files():
+    """Carga archivos adicionales de historia y transcripción para enriquecer el RAG."""
+    additional_messages = []
+    
+    # Rutas de archivos adicionales
+    data_files = [
+        "data/historia_completa_transcripcion.txt",
+        "data/timeline_estructurado.json"
+    ]
+    
+    base_path = Path(__file__).parent
+    
+    for file_path in data_files:
+        full_path = base_path / file_path
+        try:
+            if full_path.exists():
+                if file_path.endswith('.txt'):
+                    # Cargar archivo de texto
+                    with open(full_path, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                        # Crear mensaje simulado para RAG
+                        additional_messages.append({
+                            'sender_name': 'historia_transcripcion',
+                            'content': content,
+                            'timestamp_ms': int(datetime.now().timestamp() * 1000),
+                            'type': 'historia_completa'
+                        })
+                        print(f"  ✅ Historia completa cargada desde {file_path}")
+                        
+                elif file_path.endswith('.json'):
+                    # Cargar archivo JSON
+                    with open(full_path, 'r', encoding='utf-8') as f:
+                        data = json.load(f)
+                        # Convertir JSON a texto para RAG
+                        content = json.dumps(data, indent=2, ensure_ascii=False)
+                        additional_messages.append({
+                            'sender_name': 'timeline_estructurado',
+                            'content': content,
+                            'timestamp_ms': int(datetime.now().timestamp() * 1000),
+                            'type': 'timeline_estructurado'
+                        })
+                        print(f"  ✅ Timeline estructurado cargado desde {file_path}")
+            else:
+                print(f"⚠️  Archivo no encontrado: {full_path}")
+                
+        except Exception as e:
+            print(f"⚠️  Error cargando {file_path}: {e}")
+    
+    return additional_messages
 
 
 def format_messages_for_ai(messages: list) -> str:

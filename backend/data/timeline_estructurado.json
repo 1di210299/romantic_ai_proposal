@@ -1,0 +1,105 @@
+{
+  "relationship_timeline": {
+    "inicio": {
+      "fecha": "marzo 2025",
+      "descripcion": "Empezaron a hablar como amigos, se juntaban con otra amiga",
+      "primer_encuentro": "miércoles antes del primer beso",
+      "primer_beso": "viernes en reunión con amigos del trabajo"
+    },
+    "primeras_flores": {
+      "fecha": "julio 2025",
+      "tipo": "tulipanes amarillos",
+      "problema": "entrega incorrecta un día antes",
+      "solucion": "Rosatel recogió y entregó al día siguiente",
+      "contexto": "Juan Diego estaba en Cusco por trabajo"
+    },
+    "primer_encuentro_romantico": {
+      "fecha": "23 de agosto 2025 (finales de agosto)",
+      "actividad": "fueron a comer anticuchos y lomo",
+      "momento_especial": "conversaron sobre la vida, todo fue muy bonito",
+      "contexto": "Karem contó sobre propuesta anterior que no le gustó"
+    },
+    "propuesta_especial": {
+      "innovacion": "flores + página web personalizada",
+      "razon": "mejorar la experiencia de propuestas anteriores"
+    },
+    "viaje_chimbote": {
+      "contexto": "después de la propuesta",
+      "actividad": "almorzó en casa de Karem",
+      "resultado": "la pasaron muy lindo"
+    },
+    "primer_beso_playa": {
+      "fecha": "viernes en la tarde",
+      "lugar": "playa",
+      "momento": "estaban abrazados"
+    },
+    "primera_cita_lima": {
+      "fecha": "septiembre 2025",
+      "tiempo_despues": "dos semanas después del beso en la playa",
+      "actividad": "cine - primera vez juntos",
+      "otras_actividades": "películas, abrazados, cariñosos, comida japonesa"
+    },
+    "segundo_viaje_chimbote": {
+      "tiempo_despues": "semana y media después",
+      "destino": "Chimbote y Trujillo",
+      "primera_vez_cocinando": "Karem le preparó comida, estaba muy rica"
+    },
+    "trujillo": {
+      "alojamiento": "hotel",
+      "actividades": "almorzaron, playa, vieron el mar",
+      "familia": "conoció al hermano de Karem",
+      "noche": "copas, cena, besos",
+      "regreso": "lunes Juan Diego se regresó"
+    },
+    "familias": {
+      "fecha": "septiembre 2025",
+      "progreso": "Juan Diego se acercó más a los papás de Karem",
+      "reciproco": "Karem compartió con la familia de Juan Diego"
+    },
+    "mudanza_lima": {
+      "fecha": "primeros días de octubre 2025",
+      "razon": "Karem consiguió trabajo en Lima"
+    },
+    "primer_te_amo": {
+      "fecha": "domingo 5 de octubre 2025",
+      "hora": "madrugada",
+      "seguimiento": "hablaron al día siguiente",
+      "resultado": "todo salió bien",
+      "celebracion": "fueron a comer, estuvieron juntos"
+    },
+    "estado_actual": {
+      "fecha": "finales de octubre 2025",
+      "situacion": "siguen viéndose y saliendo",
+      "sentimiento": "cada día se quieren más",
+      "calidad": "se la están pasando muy linda"
+    }
+  },
+  "lugares_importantes": [
+    "Cusco (trabajo de Juan Diego)",
+    "Lima (cine, citas)",
+    "Chimbote (casa de Karem, viajes)",
+    "Trujillo (hotel, playa)",
+    "La playa (primer beso romántico)"
+  ],
+  "momentos_clave": [
+    "Primer beso en reunión de amigos",
+    "Tulipanes amarillos (primera flores)",
+    "Página web personalizada (propuesta)",
+    "Primer beso en la playa",
+    "Primera cita en el cine",
+    "Conocer a la familia",
+    "Primera vez que dijo 'te amo'"
+  ],
+  "comidas_especiales": [
+    "Anticuchos y lomo (primer encuentro romántico)",
+    "Comida japonesa (cita en Lima)",
+    "Comida preparada por Karem (muy rica)"
+  ],
+  "gestos_romanticos": [
+    "Tulipanes amarillos",
+    "Página web personalizada",
+    "Arreglar problema con Rosatel",
+    "Viajar desde Lima a Chimbote",
+    "Conocer a la familia"
+  ]
+}
