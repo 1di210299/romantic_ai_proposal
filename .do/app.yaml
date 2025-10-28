@@ -52,7 +52,7 @@ services:
   envs:
   - key: NEXT_PUBLIC_BACKEND_URL
     scope: RUN_AND_BUILD_TIME
-    value: ${backend.PUBLIC_URL}
+    value: https://starfish-app-kinb4.ondigitalocean.app
   - key: PORT
     scope: RUN_TIME
     value: "3000"
