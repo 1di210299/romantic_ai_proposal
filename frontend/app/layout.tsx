@@ -5,8 +5,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Una Sorpresa Especial 💕",
-  description: "Un mensaje romántico especial para ti",
+  title: "Karem AI - Beta 1.0",
+  description: "nuestra historia",
 };
 
 export default function RootLayout({

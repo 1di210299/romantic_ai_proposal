@@ -209,9 +209,8 @@ export default function ChatContainer() {
       <div className="bg-gradient-to-r from-navy-600 via-navy-700 to-navy-900 text-pastel-200 p-6 shadow-2xl border-b border-pastel-500/20 backdrop-blur-sm">
         <div className="max-w-4xl mx-auto">
           <h1 className="text-3xl font-bold flex items-center gap-3 tracking-tight">
-            <span className="text-pastel-400">💕</span>
             <span className="bg-gradient-to-r from-pastel-300 to-pastel-500 bg-clip-text text-transparent">
-              Una Sorpresa Especial
+              Karem AI
             </span>
           </h1>
           {!waitingForStart && (
