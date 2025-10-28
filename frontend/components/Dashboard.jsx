@@ -79,7 +79,7 @@ const Dashboard = () => {
             <div className="bg-navy-700 rounded-full h-2 mb-2">
               <div className="bg-gradient-to-r from-pastel-400 to-pastel-500 h-2 rounded-full animate-pulse" style={{width: "60%"}}></div>
             </div>
-            <p className="text-sm text-pastel-300">Procesando 33,622 mensajes de amor...</p>
+            <p className="text-sm text-pastel-300">Cargando...</p>
           </div>
         </div>
       </div>
