@@ -12,18 +12,34 @@ const Dashboard = () => {
     const loadStats = async () => {
       try {
         const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || window.location.origin;
-        const response = await fetch(`${backendUrl}/api/relationship-stats`);
+        console.log('🌐 Dashboard: Loading stats from:', backendUrl);
+        console.log('🔧 Environment vars:', {
+          NEXT_PUBLIC_BACKEND_URL: process.env.NEXT_PUBLIC_BACKEND_URL,
+          origin: window.location.origin
+        });
+        
+        const fullUrl = `${backendUrl}/api/relationship-stats`;
+        console.log('📡 Dashboard: Fetching from:', fullUrl);
+        
+        const response = await fetch(fullUrl);
+        console.log('📊 Dashboard: Response status:', response.status);
+        
         if (response.ok) {
           const data = await response.json();
+          console.log('✅ Dashboard: Stats loaded successfully:', data);
           setStats(data);
+        } else {
+          console.error('❌ Dashboard: Response not OK:', response.status, response.statusText);
         }
       } catch (error) {
-        console.error('Error loading stats, using fallback data:', error);
+        console.error('❌ Dashboard: Error loading stats:', error);
       } finally {
+        console.log('🏁 Dashboard: Loading finished, setting loading to false');
         setLoading(false);
       }
     };
 
+    console.log('🚀 Dashboard: Component mounted, loading stats...');
     loadStats();
   }, []);
 
@@ -32,8 +48,7 @@ const Dashboard = () => {
       <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-50 flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-pink-500 mx-auto mb-4"></div>
-          <p className="text-gray-600">Analizando nuestra historia de amor...</p>
-          <p className="text-sm text-gray-500 mt-2">Procesando {loading ? 'datos reales' : 'información cargada'}...</p>
+          <p className="text-gray-600">Cargando análisis de conversaciones...</p>
         </div>
       </div>
     );
@@ -48,16 +63,16 @@ const Dashboard = () => {
             <div>
               <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-2">
                 <Heart className="text-pink-500" size={32} />
-                Nuestra Historia de Amor
+                Para Karem Kiyomi Ramos
               </h1>
-              <p className="text-gray-600 mt-1">Dashboard romántico con análisis de conversaciones</p>
+              <p className="text-gray-600 mt-1">Análisis de nuestras conversaciones</p>
             </div>
             <button
               onClick={() => window.location.href = '/chat'}
-              className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-6 py-3 rounded-full font-semibold hover:from-pink-600 hover:to-rose-600 transition-all duration-200 flex items-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="bg-gradient-to-r from-pink-500 to-rose-500 text-white px-6 py-3 rounded-lg font-medium hover:from-pink-600 hover:to-rose-600 transition-all duration-200 flex items-center gap-2"
             >
               <Bot size={20} />
-              Chatear con IA
+              Iniciar Chat
             </button>
           </div>
         </div>
@@ -99,7 +114,7 @@ const Dashboard = () => {
           <div className="bg-white rounded-xl shadow-sm border border-pink-100 p-6 hover:shadow-md transition-shadow">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-medium text-gray-600">Nivel de Amor</p>
+                <p className="text-sm font-medium text-gray-600">Conexión</p>
                 <p className="text-3xl font-bold text-red-600">{stats.sentimentScore}/10</p>
               </div>
               <Sparkles className="text-red-400" size={32} />
@@ -130,7 +145,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Momentos especiales */}
+          {/* Análisis de conversaciones */}
           <div className="bg-white rounded-xl shadow-sm border border-pink-100 p-6">
             <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
               <Sparkles className="text-pink-500" size={24} />
@@ -140,7 +155,7 @@ const Dashboard = () => {
             <div className="space-y-6">
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-600">Nivel Romántico</span>
+                  <span className="text-sm font-medium text-gray-600">Conexión Emocional</span>
                   <span className="text-sm font-bold text-pink-600">{stats.sentimentScore}/10</span>
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-3">
@@ -152,10 +167,10 @@ const Dashboard = () => {
               </div>
 
               <div>
-                <h4 className="font-semibold text-gray-900 mb-3">Emojis Más Usados</h4>
+                <h4 className="font-semibold text-gray-900 mb-3">Expresiones Frecuentes</h4>
                 <div className="flex gap-3">
                   {stats.topEmojis.map((emoji, index) => (
-                    <div key={index} className="text-3xl p-2 bg-pink-50 rounded-lg hover:bg-pink-100 transition-colors">
+                    <div key={index} className="text-3xl p-2 bg-pink-50 rounded-lg">
                       {emoji}
                     </div>
                   ))}
@@ -165,20 +180,20 @@ const Dashboard = () => {
               <div className="bg-gradient-to-r from-pink-50 to-rose-50 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <Heart className="text-red-500" size={20} />
-                  <span className="font-semibold text-gray-900">Momentos Especiales Detectados</span>
+                  <span className="font-semibold text-gray-900">Momentos Significativos</span>
                 </div>
                 <p className="text-3xl font-bold text-red-600">{stats.specialMoments}</p>
-                <p className="text-sm text-gray-600">conversaciones con alta carga emocional</p>
+                <p className="text-sm text-gray-600">conversaciones destacadas</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Datos curiosos */}
+        {/* Estadísticas adicionales */}
         <div className="mt-8 bg-white rounded-xl shadow-sm border border-pink-100 p-6">
           <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
             <Clock className="text-pink-500" size={24} />
-            Datos Curiosos de Nuestra Relación
+            Estadísticas de Conversación
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -189,12 +204,12 @@ const Dashboard = () => {
             
             <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg">
               <p className="text-3xl font-bold text-purple-600">{stats.mostActiveHour}:00</p>
-              <p className="text-sm text-gray-600">hora más activa del día</p>
+              <p className="text-sm text-gray-600">hora más activa</p>
             </div>
             
             <div className="text-center p-4 bg-gradient-to-br from-rose-50 to-red-50 rounded-lg">
               <p className="text-3xl font-bold text-rose-600">{Math.round(stats.totalMessages / stats.totalDays * 7)}</p>
-              <p className="text-sm text-gray-600">mensajes promedio por semana</p>
+              <p className="text-sm text-gray-600">mensajes promedio semanal</p>
             </div>
           </div>
         </div>
@@ -202,13 +217,13 @@ const Dashboard = () => {
         {/* Call to action */}
         <div className="mt-8 text-center">
           <div className="bg-gradient-to-r from-pink-500 to-rose-500 rounded-xl p-8 text-white">
-            <h3 className="text-2xl font-bold mb-2">¿Lista para revivir nuestros momentos?</h3>
-            <p className="text-pink-100 mb-6">El chatbot con IA conoce todos nuestros {stats.totalMessages.toLocaleString()} mensajes</p>
+            <h3 className="text-2xl font-bold mb-2">Conversación Inteligente</h3>
+            <p className="text-pink-100 mb-6">Chatbot entrenado con {stats.totalMessages.toLocaleString()} mensajes reales</p>
             <button
               onClick={() => window.location.href = '/chat'}
-              className="bg-white text-pink-600 px-8 py-3 rounded-full font-bold hover:bg-pink-50 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="bg-white text-pink-600 px-8 py-3 rounded-lg font-medium hover:bg-pink-50 transition-all duration-200"
             >
-              🤖 Empezar a Chatear
+              Iniciar Conversación
             </button>
           </div>
         </div>

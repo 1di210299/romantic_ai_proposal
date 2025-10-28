@@ -7,6 +7,8 @@ Las preguntas se generan dinámicamente usando OpenAI + RAG (Retrieval-Augmented
 
 import os
 import json
+import logging
+import sys
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -17,18 +19,41 @@ from openai import OpenAI
 from services.rag_service import get_rag_service
 from prompts.question_generator_prompt import get_question_generator_prompt
 
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(sys.stdout),
+        logging.FileHandler('app.log')
+    ]
+)
+logger = logging.getLogger(__name__)
+
 # Load environment variables
 load_dotenv()
 
+logger.info("🚀 Iniciando aplicación Flask...")
+
 app = Flask(__name__)
 CORS(app)
+
+logger.info("✅ Flask y CORS configurados")
 
 # Configuration
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'dev-secret-key-change-in-production')
 app.config['DEBUG'] = os.getenv('FLASK_DEBUG', 'True') == 'True'
 
+logger.info(f"🔧 Configuración - DEBUG: {app.config['DEBUG']}")
+
 # OpenAI client
-openai_client = OpenAI(api_key=os.getenv('OPENAI_API_KEY'))
+openai_api_key = os.getenv('OPENAI_API_KEY')
+if openai_api_key:
+    logger.info("✅ OpenAI API key encontrada")
+    openai_client = OpenAI(api_key=openai_api_key)
+else:
+    logger.error("❌ OpenAI API key NO encontrada!")
+    openai_client = None
 
 # RAG Service (inicializado después de cargar mensajes)
 rag_service = None
@@ -39,6 +64,7 @@ CONVERSATION_PATH = os.getenv('CONVERSATION_DATA_PATH', '../karemramos_118429704
 CONVERSATION_PATH = Path(__file__).parent / CONVERSATION_PATH
 CONVERSATION_PATH = CONVERSATION_PATH.resolve()
 
+logger.info(f"📂 Ruta de conversación: {CONVERSATION_PATH}")
 print(f"📂 Ruta de conversación: {CONVERSATION_PATH}")
 
 # Global state (in production, use a database)
@@ -339,7 +365,7 @@ def generate_single_question_with_openai(messages: list, question_number: int, p
             "options": result.get('options', []),
             "correct_answers": result.get('correct_answers', []),
             "hints": result.get('hints', []),
-            "success_message": result.get('success_message', '¡Correcto! 💕'),
+            "success_message": result.get('success_message', 'Correcto.'),
             "category": result.get('category', 'general'),
             "difficulty": result.get('difficulty', 'medium'),
             "data_source": result.get('data_source', 'Datos de conversación')
@@ -362,7 +388,7 @@ def generate_single_question_with_openai(messages: list, question_number: int, p
             "options": ["amor", "cielo", "vida", "corazón"],
             "correct_answers": ["amor", "mi amor"],
             "hints": ["Lo digo muy seguido...", "Es el más común...", "A-M-O-R"],
-            "success_message": "¡Sí! 'Amor' es nuestro apodo especial 💕",
+            "success_message": "Así es. Es el apodo que más usamos.",
             "category": "apodos",
             "difficulty": "easy",
             "data_source": "Fallback: pregunta genérica"
@@ -373,14 +399,23 @@ def generate_single_question_with_openai(messages: list, question_number: int, p
 @app.route('/api/health', methods=['GET'])
 def health_check():
     """Health check endpoint for deployment verification"""
+    logger.info("🔍 Health check endpoint called")
     try:
+        rag_enabled = rag_service is not None
+        total_messages = len(rag_service.chunk_texts) if rag_service else 0
+        
+        logger.info(f"✅ Health check successful - RAG: {rag_enabled}, Messages: {total_messages}")
+        
         return jsonify({
             "status": "ok",
             "timestamp": datetime.now().isoformat(),
-            "rag_enabled": rag_service is not None,
-            "total_messages": len(rag_service.chunk_texts) if rag_service else 0
+            "rag_enabled": rag_enabled,
+            "total_messages": total_messages,
+            "environment": os.environ.get('FLASK_ENV', 'development'),
+            "port": os.environ.get('BACKEND_PORT', '5000')
         })
     except Exception as e:
+        logger.error(f"❌ Health check failed: {str(e)}")
         return jsonify({
             "status": "error", 
             "error": str(e)
@@ -481,7 +516,7 @@ def analyze_conversation_data():
             
             # Top emojis
             top_emojis = sorted(content_analysis['emojis'].items(), key=lambda x: x[1], reverse=True)[:5]
-            top_emojis_list = [emoji[0] for emoji in top_emojis] if top_emojis else ['❤️', '😍', '🥰']
+            top_emojis_list = [emoji[0] for emoji in top_emojis] if top_emojis else ['❤', '�', '💜']
             
             # Fases de la relación basadas en datos reales
             monthly_data = sorted(content_analysis['conversations_by_date'].items())
@@ -561,7 +596,7 @@ def get_relationship_stats():
                     {"phase": "Creciendo", "messages": int(estimated_messages * 0.4), "period": "Desarrollo"},
                     {"phase": "Consolidación", "messages": int(estimated_messages * 0.4), "period": "Actualidad"}
                 ],
-                "topEmojis": ['❤️', '😍', '🥰', '😘', '💕'],
+                "topEmojis": ['❤', '�', '💜', '�', '🌸'],
                 "specialMoments": int(estimated_messages * 0.05),
                 "generated_at": datetime.now().isoformat(),
                 "data_source": "rag_estimation",
@@ -641,7 +676,7 @@ def start_quiz():
             "options": ["amor", "cielo", "vida", "bebé"],
             "correct_answers": ["amor", "mi amor"],
             "hints": ["Lo digo muy seguido...", "Es el más común...", "A-M-O-R"],
-            "success_message": "¡Sí! 'Amor' es nuestro apodo especial 💕"
+            "success_message": "Correcto. Ese es el apodo que más uso."
         }
     
     # Inicializar sesión
@@ -662,9 +697,9 @@ def start_quiz():
     }
     
     greeting = (
-        f"¡Hola {user_name}! 💕\n\n"
-        f"Preparé algo especial para ti. "
-        f"Responde estas {total_questions} preguntas sobre nuestra relación y descubre algo maravilloso al final. ✨\n\n"
+        f"Hola {user_name}.\n\n"
+        f"He preparado {total_questions} preguntas basadas en nuestras conversaciones. "
+        f"Al completarlas, tengo algo que decirte.\n\n"
         f"Pregunta 1 de {total_questions}:\n\n"
         f"{first_question['question']}"
     )
@@ -762,11 +797,11 @@ def answer_question():
             return jsonify({
                 "success": True,
                 "message": (
-                    f"{current_question.get('success_message', '¡Correcto! 💕')}\n\n"
-                    f"🎉 ¡FELICIDADES! 🎉\n\n"
-                    f"Completaste el quiz con {session['correct_answers']} respuestas correctas. "
-                    f"Conoces muy bien nuestra historia. 💕\n\n"
-                    f"Ahora descubre el lugar especial que preparé para ti... 📍"
+                    f"{current_question.get('success_message', 'Correcto.')}\n\n"
+                    f"Has completado todas las preguntas.\n\n"
+                    f"Respondiste correctamente {session['correct_answers']} preguntas. "
+                    f"Conoces bien nuestra historia.\n\n"
+                    f"Ahora, hay algo importante que quiero decirte..."
                 ),
                 "completed": True,
                 "is_correct": True,
@@ -789,14 +824,14 @@ def answer_question():
                 "options": ["Todo", "Tu amor", "Nuestra conexión", "Nuestros momentos"],
                 "correct_answers": ["todo", "tu amor", "nuestra conexión", "nuestros momentos"],
                 "hints": ["Piensa en lo especial que somos...", "Es todo...", "TODO"],
-                "success_message": "¡Exacto! Amo todo de nosotros 💕"
+                "success_message": "Así es. Valoro mucho lo que tenemos."
             }
         
         session['questions_asked'].append(next_question)
         session['current_question_index'] += 1
         
         response_message = (
-            f"{current_question.get('success_message', '¡Correcto! 💕')}\n\n"
+            f"{current_question.get('success_message', 'Correcto.')}\n\n"
             f"Pregunta {next_question_number} de {total_questions}:\n\n"
             f"{next_question['question']}"
         )
@@ -851,7 +886,7 @@ def answer_question():
                 session['completed'] = True
                 return jsonify({
                     "success": True,
-                    "message": "❌ Has agotado todos los intentos disponibles.\n\nNo te preocupes, puedes intentarlo de nuevo cuando quieras. 💕",
+                    "message": "Has agotado los intentos disponibles.\n\nPuedes intentarlo de nuevo cuando gustes.",
                     "completed": True,
                     "is_correct": False,
                     "options": []
@@ -873,14 +908,14 @@ def answer_question():
                     "options": ["La universidad", "Un parque", "Un café", "El cine"],
                     "correct_answers": ["universidad", "u", "la u"],
                     "hints": ["Pasamos mucho tiempo ahí...", "Es donde estudiamos...", "La U"],
-                    "success_message": "¡Exacto! La universidad es nuestro lugar especial 💕"
+                    "success_message": "Correcto. La universidad es un lugar importante para nosotros."
                 }
             
             session['questions_asked'].append(new_question)
             session['current_question_index'] += 1
             
             response_message = (
-                f"No te preocupes, probemos con otra pregunta. 😊\n\n"
+                f"Probemos con otra pregunta.\n\n"
                 f"Pregunta {next_question_number} de {total_questions}:\n\n"
                 f"{new_question['question']}"
             )
@@ -958,10 +993,10 @@ def get_location():
         "longitude": float(os.getenv('FINAL_LONGITUDE', -99.1332)),
         "address": os.getenv('FINAL_ADDRESS', 'Te espero en un lugar especial'),
         "message": (
-            "¡Lo lograste! 🎉\n\n"
-            "Conoces muy bien nuestra historia. "
-            "Ahora ven a este lugar... "
-            "tengo algo importante que preguntarte. 💕"
+            f"Karem Kiyomi Ramos,\n\n"
+            "Has demostrado que conoces bien nuestra historia. "
+            "Ahora, ¿podrías venir a este lugar? "
+            "Hay algo importante que quiero preguntarte."
         )
     }
     
@@ -980,17 +1015,24 @@ if __name__ == '__main__':
     
     try:
         # Cargar todos los mensajes
+        logger.info("📥 Cargando mensajes...")
         all_messages = load_all_messages()
+        logger.info(f"✅ {len(all_messages)} mensajes cargados")
         
         # Inicializar RAG
+        logger.info("📡 Inicializando RAG Service...")
         print("\n📡 Inicializando RAG Service...")
         rag_service = get_rag_service(os.getenv('OPENAI_API_KEY'))
+        logger.info("✅ RAG Service creado")
         
         # Construir índice (o cargar desde cache)
+        logger.info("🔨 Construyendo índice RAG...")
         rag_service.build_index(all_messages, force_rebuild=False)
+        logger.info("✅ Índice RAG construido")
         
         # Mostrar estadísticas
         stats = rag_service.get_statistics()
+        logger.info(f"📊 RAG Stats - Chunks: {stats.get('total_chunks', 0):,}")
         print("\n📊 Estadísticas del RAG:")
         print(f"  - Total chunks: {stats.get('total_chunks', 0):,}")
         print(f"  - Total mensajes: {stats.get('total_messages', 0):,}")
@@ -1015,23 +1057,31 @@ if __name__ == '__main__':
     port = int(os.getenv('PORT', os.getenv('BACKEND_PORT', 8080)))
     host = os.getenv('HOST', '0.0.0.0')
     
+    logger.info(f"🌐 Servidor iniciando en http://{host}:{port}")
+    logger.info(f"🔧 Modo debug: {app.config['DEBUG']}")
+    logger.info(f"🔑 OpenAI API configurado: {'✅' if os.getenv('OPENAI_API_KEY') else '❌'}")
+    
     print(f"\n🌐 Servidor iniciando en http://{host}:{port}")
     print(f"🔧 Modo debug: {app.config['DEBUG']}")
     print(f"🔑 OpenAI API configurado: {'✅' if os.getenv('OPENAI_API_KEY') else '❌'}")
     
     if not os.getenv('OPENAI_API_KEY') or os.getenv('OPENAI_API_KEY') == 'your_openai_api_key_here':
+        logger.warning("⚠️ OpenAI API Key no configurado correctamente")
         print("⚠️  ADVERTENCIA: OpenAI API Key no configurado correctamente")
         print("   Configura OPENAI_API_KEY en el archivo .env")
     
     # Usar servidor de producción si no estamos en debug
     if app.config['DEBUG']:
+        logger.info("🔧 Iniciando servidor de desarrollo...")
         app.run(host=host, port=port, debug=True)
     else:
         # En producción, usar waitress (servidor WSGI más robusto)
+        logger.info("🚀 Iniciando servidor de producción con Waitress...")
         print("🚀 Iniciando servidor de producción con Waitress...")
         try:
             from waitress import serve
             serve(app, host=host, port=port, threads=4)
         except ImportError:
+            logger.warning("⚠️ Waitress no disponible, usando servidor Flask")
             print("⚠️ Waitress no disponible, usando servidor Flask")
             app.run(host=host, port=port, debug=False, threaded=True)
