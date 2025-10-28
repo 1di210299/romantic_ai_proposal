@@ -1,6 +1,6 @@
 name: romantic-ai-proposal
 services:
-# Backend debe ir PRIMERO para las rutas /api/*
+# Backend - sin cambios
 - name: backend
   source_dir: /backend
   github:
@@ -31,7 +31,7 @@ services:
     scope: RUN_TIME
     value: "8080"
 
-# Frontend debe ir DESPUÉS y manejar todas las demás rutas
+# Frontend - con rutas más explícitas
 - name: frontend
   source_dir: /frontend
   github:
@@ -43,10 +43,16 @@ services:
   instance_count: 1
   instance_size_slug: basic-xxs
   routes:
+  - path: /_next/static
+    preserve_path_prefix: true
+  - path: /_next
+    preserve_path_prefix: true
   - path: /
-    preserve_path_prefix: false
   http_port: 3000
   envs:
   - key: NEXT_PUBLIC_BACKEND_URL
     scope: RUN_AND_BUILD_TIME
     value: ${backend.PUBLIC_URL}
+  - key: PORT
+    scope: RUN_TIME
+    value: "3000"
