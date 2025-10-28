@@ -79,18 +79,45 @@ def load_messages_sample(max_messages: int = 1000):
 
 def load_all_messages():
     """Carga TODOS los mensajes disponibles para RAG."""
-    print(f"📂 Cargando TODOS los mensajes desde {CONVERSATION_PATH} para RAG...")
+    print(f"📂 Ruta de conversación: {CONVERSATION_PATH}")
     
     all_messages = []
-    conversation_dir = Path(CONVERSATION_PATH)
     
-    # Verificar si existe el directorio
-    if not conversation_dir.exists():
-        print(f"❌ Directorio no encontrado: {conversation_dir}")
+    # Lista de rutas posibles para buscar los datos
+    possible_paths = [
+        Path(CONVERSATION_PATH),  # Ruta configurada
+        Path("../karemramos_1184297046409691"),  # Relativa desde backend
+        Path("./karemramos_1184297046409691"),   # Relativa desde directorio actual
+        Path("/workspace/karemramos_1184297046409691"),  # DigitalOcean workspace
+        Path(__file__).parent.parent / "karemramos_1184297046409691"  # Desde raíz del proyecto
+    ]
+    
+    conversation_dir = None
+    
+    # Probar cada ruta posible
+    for path in possible_paths:
+        print(f"🔍 Probando ruta: {path.resolve()}")
+        if path.exists():
+            conversation_dir = path
+            print(f"✅ Directorio encontrado: {conversation_dir.resolve()}")
+            break
+    
+    if not conversation_dir:
+        print("❌ No se encontró el directorio de conversación en ninguna ubicación")
         print("📁 Contenido del directorio actual:")
         current_dir = Path(".")
         for item in current_dir.iterdir():
             print(f"  - {item.name}")
+        
+        # También mostrar el directorio padre
+        print("📁 Contenido del directorio padre:")
+        parent_dir = Path("..").resolve()
+        try:
+            for item in parent_dir.iterdir():
+                print(f"  - {item.name}")
+        except Exception as e:
+            print(f"❌ Error listando directorio padre: {e}")
+        
         return []
     
     # Buscar archivos JSON
@@ -100,8 +127,11 @@ def load_all_messages():
     if not json_files:
         print("❌ No se encontraron archivos message_*.json")
         print("📁 Contenido del directorio de conversación:")
-        for item in conversation_dir.iterdir():
-            print(f"  - {item.name}")
+        try:
+            for item in conversation_dir.iterdir():
+                print(f"  - {item.name}")
+        except Exception as e:
+            print(f"❌ Error listando directorio: {e}")
         return []
     
     # Leer todos los archivos de mensajes
@@ -744,7 +774,7 @@ def get_location():
 if __name__ == '__main__':
     # 🚀 Inicializar RAG Service al inicio
     print("\n" + "="*60)
-    print("🚀 Inicializando Romantic AI Proposal System v2.0")
+    print("🚀 Inicializando Romantic AI Proposal System v2.1")
     print("="*60)
     print(f"🏷️  Build: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     
@@ -762,13 +792,13 @@ if __name__ == '__main__':
         # Mostrar estadísticas
         stats = rag_service.get_statistics()
         print("\n📊 Estadísticas del RAG:")
-        print(f"  - Total chunks: {stats['total_chunks']:,}")
-        print(f"  - Total mensajes: {stats['total_messages']:,}")
-        print(f"  - Total vectores: {stats['total_vectors']:,}")
-        print(f"  - Modelo embeddings: {stats['embedding_model']}")
-        print(f"  - Dimensión: {stats['embedding_dimension']}")
-        print(f"  - Tamaño índice: {stats['index_size_mb']:.2f} MB")
-        print(f"  - Cache existe: {'✅' if stats['cache_exists'] else '❌'}")
+        print(f"  - Total chunks: {stats.get('total_chunks', 0):,}")
+        print(f"  - Total mensajes: {stats.get('total_messages', 0):,}")
+        print(f"  - Total vectores: {stats.get('total_vectors', 0):,}")
+        print(f"  - Modelo embeddings: {stats.get('embedding_model', 'N/A')}")
+        print(f"  - Dimensión: {stats.get('embedding_dimension', 0)}")
+        print(f"  - Tamaño índice: {stats.get('index_size_mb', 0):.2f} MB")
+        print(f"  - Cache existe: {'✅' if stats.get('cache_exists', False) else '❌'}")
         
         print("\n" + "="*60)
         print("✅ Sistema inicializado correctamente")
