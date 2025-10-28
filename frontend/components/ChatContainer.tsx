@@ -29,7 +29,7 @@ export default function ChatContainer() {
   const [messages, setMessages] = useState<Message[]>([
     {
       role: 'bot',
-      content: 'Hola Karem, soy Karem AI. He aprendido mucho sobre ti y nuestra historia a través de nuestras conversaciones. Me encantaría platicar contigo y recordar algunos momentos especiales. ¿Te parece si empezamos?',
+      content: 'Hola amor. Te preparé un quiz sobre nosotros, entrenado con nuestras conversaciones. ¿Jugamos?',
       timestamp: new Date(),
     },
   ]);

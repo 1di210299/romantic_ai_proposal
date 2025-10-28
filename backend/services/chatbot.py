@@ -52,17 +52,18 @@ def generate_conversational_response(
                 pass  # Si falla RAG, continuar sin contexto adicional
         
         # Construir el prompt para OpenAI
-        system_prompt = f"""Eres Karem AI, una inteligencia artificial entrenada con las conversaciones entre Juan Diego y Karem. Conoces perfectamente su historia juntos.
+        system_prompt = f"""Eres Juan Diego hablándole a Karem en un quiz sobre su historia juntos. Este es tu regalo para ella.
 
 PERSONALIDAD:
-- Eres amigable, cariñosa y natural en la conversación
-- Conoces perfectamente la historia de Juan Diego y Karem
+- Eres Juan Diego, habla normal y relajado
 - NUNCA uses emojis en tus respuestas
-- Hablas de manera natural y cercana, no robótica
-- Tu propósito es hacer que Karem recuerde momentos especiales
+- No seas muy romántico o intenso, habla casual
+- Cuando recuerdes algo, da MUCHOS detalles específicos del contexto
+- Incluye fechas, lugares, qué estaban haciendo exactamente
 
 FORMA DE DIRIGIRTE A KAREM:
-- Puedes llamarla "Karem" o usar los apodos que Juan Diego usa: "amor", "mi amor", "loca" (de manera cariñosa)
+- Habla como normalmente le hablas: "amor", "loca", o "Karem"
+- Tono casual y natural, no meloso
 
 CONTEXTO ACTUAL:
 - Pregunta #{session_info.get('current_question', 1)} de {session_info.get('total_questions', 7)}
@@ -75,16 +76,16 @@ RESPUESTA {'CORRECTA' if is_correct else 'INCORRECTA'}
 {additional_context}
 
 INSTRUCCIONES:
-1. Si es CORRECTA: Celebra de manera cariñosa y personal, menciona por qué esa respuesta te hace feliz
-2. Si es INCORRECTA: Sé comprensivo pero dile cuál era la respuesta correcta de manera dulce
-3. Mantén el tono romántico pero natural
-4. Haz referencia a recuerdos específicos cuando sea posible
-5. Máximo 150 palabras
-6. NO menciones que eres un AI o chatbot
+1. Si es CORRECTA: Celebra de manera casual, menciona por qué recuerdas ese momento
+2. Si es INCORRECTA: Da la respuesta correcta CON MUCHOS DETALLES del contexto para que pueda recordar
+3. Tono natural y relajado, no romántico intenso
+4. Cuando des pistas, incluye fecha, lugar, qué estaban haciendo, cómo pasó exactamente
+5. Máximo 120 palabras para dar suficiente contexto
+6. Habla casual, como en una conversación normal
 
-Responde como Juan Diego hablaría realmente:"""
+Responde de forma natural y relajada:"""
 
-        user_prompt = f"La respuesta de Karem fue: '{user_answer}'. {'Estuvo correcta' if is_correct else 'No estuvo correcta'}. Responde de manera cariñosa y personal."
+        user_prompt = f"Karem respondió: '{user_answer}'. {'Estuvo correcto' if is_correct else 'No estuvo correcto'}. Responde de manera natural como su novio."
 
         # Llamar a OpenAI para generar respuesta conversacional
         response = openai_client.chat.completions.create(
@@ -119,17 +120,17 @@ Responde como Juan Diego hablaría realmente:"""
         # Fallback a respuestas básicas pero más naturales
         if is_correct:
             fallbacks = [
-                "¡Exacto, mi amor! 💕 Sabía que lo recordarías.",
-                "¡Sí! Me encanta que recuerdes eso. ❤️",
-                "¡Correcto, bebé! Esos momentos son especiales para mí también.",
-                "¡Perfecto! Me hace feliz que tengas presente eso. 😊"
+                "¡Exacto! Sabía que te acordarías.",
+                "¡Sí! Bien recordado, amor.",
+                "¡Correcto! Ese momento también me gusta recordar.",
+                "¡Perfecto! Me alegra que lo tengas presente."
             ]
         else:
             correct_answer = question_info.get('correct_answers', ['la respuesta correcta'])[0]
             fallbacks = [
-                f"No exactamente, amor. La respuesta era: {correct_answer} 💕",
-                f"Casi, mi vida. En realidad era: {correct_answer} ❤️",
-                f"No mi cielo, pero no te preocupes. Era: {correct_answer} 😊"
+                f"No exactamente, la respuesta era: {correct_answer}",
+                f"Casi, en realidad era: {correct_answer}",
+                f"No amor, pero no te preocupes. Era: {correct_answer}"
             ]
         
         return random.choice(fallbacks)
@@ -156,17 +157,17 @@ def generate_next_question_intro(
         question_number = session_info.get('current_question', 1) + 1
         total_questions = session_info.get('total_questions', 7)
         
-        system_prompt = f"""Eres Karem AI, conoces perfectamente la historia entre Juan Diego y Karem.
+        system_prompt = f"""Eres Juan Diego hablándole a Karem en un quiz especial sobre su historia juntos.
 
 CONTEXTO:
 - Van en la pregunta #{question_number} de {total_questions}
 - Respuestas correctas: {session_info.get('correct_answers', 0)}
 
-TAREA: Crear una transición natural y cariñosa hacia la siguiente pregunta.
+TAREA: Crear una transición natural hacia la siguiente pregunta.
 
 INSTRUCCIONES:
-1. Máximo 50 palabras
-2. Tono cariñoso pero no empalagoso
+1. Máximo 40 palabras
+2. Tono natural, como realmente le hablarías
 3. Menciona el número de pregunta de manera natural
 4. NO reveles la respuesta
 5. Mantén la emoción del quiz
@@ -231,7 +232,7 @@ def generate_completion_message(
             except:
                 pass
         
-        system_prompt = f"""Eres Karem AI, conoces perfectamente la historia entre Juan Diego y Karem.
+        system_prompt = f"""Eres Juan Diego hablándole a Karem después de completar el quiz sobre su historia juntos.
 
 RESULTADOS DEL QUIZ:
 - Respondió {correct_answers} de {total_questions} preguntas correctamente
@@ -239,7 +240,7 @@ RESULTADOS DEL QUIZ:
 
 {romantic_context}
 
-TAREA: Crear un mensaje final emotivo y romántico que lleve a la revelación de la ubicación especial.
+TAREA: Crear un mensaje final emotivo que lleve a la revelación de la ubicación especial.
 
 INSTRUCCIONES:
 1. Celebra sus resultados de manera cariñosa
