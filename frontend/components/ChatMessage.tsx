@@ -24,8 +24,7 @@ export default function ChatMessage({ role, content, timestamp, enableStreaming 
       >
         {isBot && (
           <div className="flex items-center gap-3 mb-3 pb-2 border-b border-pastel-300/30">
-            <span className="text-3xl">🤖</span>
-            <span className="font-bold text-sm text-navy-700 tracking-wide">Asistente</span>
+            <span className="font-bold text-sm text-navy-700 tracking-wide">Karem AI</span>
           </div>
         )}
         

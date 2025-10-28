@@ -291,19 +291,19 @@ const Dashboard = () => {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {stats.aiInsights.unique_language && (
-                <div className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 mb-2">💝 Lenguaje Único</h4>
+                <div className="p-4 bg-gradient-to-br from-navy-700 to-navy-600 rounded-lg">
+                  <h4 className="font-semibold text-pastel-100 mb-2">💝 Lenguaje Único</h4>
                   {stats.aiInsights.unique_language.pet_names?.length > 0 && (
                     <div className="mb-2">
-                      <p className="text-sm text-gray-600">Apodos cariñosos:</p>
-                      <p className="text-pink-600 font-medium">
+                      <p className="text-sm text-pastel-300">Apodos cariñosos:</p>
+                      <p className="text-pastel-400 font-medium">
                         {stats.aiInsights.unique_language.pet_names.join(', ')}
                       </p>
                     </div>
                   )}
                   {stats.aiInsights.unique_language.unique_phrases?.length > 0 && (
                     <div>
-                      <p className="text-sm text-gray-600">Frases especiales:</p>
+                      <p className="text-sm text-pastel-300">Frases especiales:</p>
                       <p className="text-pastel-400 text-sm italic">
                         &quot;{stats.aiInsights.unique_language.unique_phrases[0]}&quot;
                       </p>
