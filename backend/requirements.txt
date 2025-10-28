@@ -23,5 +23,8 @@ python-dateutil>=2.8.0
 # JSON processing
 jsonschema>=4.20.0
 
+# Production WSGI server
+waitress>=2.1.0
+
 # Optional: Database (if needed)
 # sqlalchemy==2.0.25

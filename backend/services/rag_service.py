@@ -145,13 +145,22 @@ class RAGService:
         chunk_texts = [chunk['text'] for chunk in chunks]
         
         # 3. Generar embeddings en batch
+        if not chunk_texts:
+            print("⚠️ No hay textos para generar embeddings")
+            self.index = faiss.IndexFlatL2(self.embedding_dim)
+            return
+            
         print(f"🧮 Generando {len(chunk_texts)} embeddings...")
         embeddings = self._get_embeddings_batch(chunk_texts, batch_size=50)
         
         # 4. Crear índice FAISS
         print(f"🔨 Creando índice FAISS...")
         self.index = faiss.IndexFlatL2(self.embedding_dim)
-        self.index.add(embeddings)
+        
+        if embeddings.size > 0:
+            self.index.add(embeddings)
+        else:
+            print("⚠️ No hay embeddings para agregar al índice")
         
         # 5. Guardar cache
         print(f"💾 Guardando cache...")

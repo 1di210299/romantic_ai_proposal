@@ -78,25 +78,45 @@ def load_messages_sample(max_messages: int = 1000):
 
 
 def load_all_messages():
-    """Carga TODOS los mensajes para el RAG (sin límite)."""
+    """Carga TODOS los mensajes disponibles para RAG."""
     print(f"📂 Cargando TODOS los mensajes desde {CONVERSATION_PATH} para RAG...")
     
     all_messages = []
     conversation_dir = Path(CONVERSATION_PATH)
     
-    for msg_file in sorted(conversation_dir.glob('message_*.json')):
+    # Verificar si existe el directorio
+    if not conversation_dir.exists():
+        print(f"❌ Directorio no encontrado: {conversation_dir}")
+        print("📁 Contenido del directorio actual:")
+        current_dir = Path(".")
+        for item in current_dir.iterdir():
+            print(f"  - {item.name}")
+        return []
+    
+    # Buscar archivos JSON
+    json_files = list(conversation_dir.glob('message_*.json'))
+    print(f"🔍 Archivos JSON encontrados: {len(json_files)}")
+    
+    if not json_files:
+        print("❌ No se encontraron archivos message_*.json")
+        print("📁 Contenido del directorio de conversación:")
+        for item in conversation_dir.iterdir():
+            print(f"  - {item.name}")
+        return []
+    
+    # Leer todos los archivos de mensajes
+    for msg_file in sorted(json_files):
         try:
+            print(f"📖 Leyendo {msg_file.name}...")
             with open(msg_file, 'r', encoding='utf-8') as f:
                 data = json.load(f)
                 messages = data.get('messages', [])
                 all_messages.extend(messages)
+                print(f"  ✅ {len(messages)} mensajes cargados desde {msg_file.name}")
         except Exception as e:
             print(f"⚠️  Error leyendo {msg_file.name}: {e}")
     
-    # Ordenar por timestamp
-    all_messages.sort(key=lambda x: x.get('timestamp_ms', 0))
-    
-    print(f"✅ {len(all_messages):,} mensajes totales cargados para RAG")
+    print(f"✅ {len(all_messages)} mensajes totales cargados para RAG")
     return all_messages
 
 
@@ -760,7 +780,8 @@ if __name__ == '__main__':
         print("\n⚠️  El sistema continuará sin RAG, usando método básico.")
     
     # Iniciar servidor
-    port = int(os.getenv('BACKEND_PORT', os.getenv('PORT', 5000)))
+    # DigitalOcean usa puerto 8080 por defecto para health checks
+    port = int(os.getenv('PORT', os.getenv('BACKEND_PORT', 8080)))
     host = os.getenv('HOST', '0.0.0.0')
     
     print(f"\n🌐 Servidor iniciando en http://{host}:{port}")
@@ -771,4 +792,15 @@ if __name__ == '__main__':
         print("⚠️  ADVERTENCIA: OpenAI API Key no configurado correctamente")
         print("   Configura OPENAI_API_KEY en el archivo .env")
     
-    app.run(host=host, port=port, debug=app.config['DEBUG'])
+    # Usar servidor de producción si no estamos en debug
+    if app.config['DEBUG']:
+        app.run(host=host, port=port, debug=True)
+    else:
+        # En producción, usar waitress (servidor WSGI más robusto)
+        print("🚀 Iniciando servidor de producción con Waitress...")
+        try:
+            from waitress import serve
+            serve(app, host=host, port=port, threads=4)
+        except ImportError:
+            print("⚠️ Waitress no disponible, usando servidor Flask")
+            app.run(host=host, port=port, debug=False, threaded=True)
