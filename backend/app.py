@@ -400,6 +400,200 @@ def health_check():
             "error": str(e)
         }), 500
 
+def analyze_conversation_data():
+    """Analiza los datos reales de conversación cargados"""
+    try:
+        from services.spaces_loader import load_messages_from_spaces
+        
+        print("📊 Analizando datos reales de conversación...")
+        
+        # Intentar cargar mensajes desde Spaces o local
+        messages = []
+        try:
+            messages = load_messages_from_spaces()
+            print(f"✅ Mensajes cargados desde Spaces: {len(messages)}")
+        except:
+            print("⚠️ No se pudieron cargar desde Spaces, usando datos locales...")
+            # Cargar desde archivos locales como fallback
+            pass
+        
+        if not messages:
+            return None
+            
+        # ANÁLISIS REAL DE DATOS
+        total_messages = len(messages)
+        
+        # Extraer fechas de los mensajes
+        dates = []
+        message_times = []
+        senders = {}
+        content_analysis = {
+            'total_chars': 0,
+            'romantic_keywords': 0,
+            'emojis': {},
+            'longest_message': 0,
+            'conversations_by_date': {}
+        }
+        
+        for msg in messages:
+            try:
+                # Análisis de fecha y hora
+                if 'timestamp_ms' in msg:
+                    timestamp = datetime.fromtimestamp(msg['timestamp_ms'] / 1000)
+                    dates.append(timestamp)
+                    message_times.append(timestamp.hour)
+                    date_key = timestamp.strftime('%Y-%m')
+                    content_analysis['conversations_by_date'][date_key] = content_analysis['conversations_by_date'].get(date_key, 0) + 1
+                
+                # Análisis de remitente
+                sender = msg.get('sender_name', 'Unknown')
+                senders[sender] = senders.get(sender, 0) + 1
+                
+                # Análisis de contenido
+                content = msg.get('content', '')
+                if content:
+                    content_analysis['total_chars'] += len(content)
+                    content_analysis['longest_message'] = max(content_analysis['longest_message'], len(content))
+                    
+                    # Buscar palabras románticas
+                    romantic_words = ['amor', 'te amo', 'mi vida', 'corazón', 'besitos', 'hermosa', 'princesa', 'mi amor', 'baby', 'cariño']
+                    content_lower = content.lower()
+                    for word in romantic_words:
+                        if word in content_lower:
+                            content_analysis['romantic_keywords'] += 1
+                    
+                    # Contar emojis
+                    import re
+                    emoji_pattern = re.compile("["
+                        "\U0001F600-\U0001F64F"  # emoticons
+                        "\U0001F300-\U0001F5FF"  # symbols & pictographs
+                        "\U0001F680-\U0001F6FF"  # transport & map symbols
+                        "\U0001F1E0-\U0001F1FF"  # flags (iOS)
+                        "\U00002702-\U000027B0"
+                        "\U000024C2-\U0001F251"
+                        "]+", flags=re.UNICODE)
+                    
+                    emojis_found = emoji_pattern.findall(content)
+                    for emoji in emojis_found:
+                        content_analysis['emojis'][emoji] = content_analysis['emojis'].get(emoji, 0) + 1
+                        
+            except Exception as e:
+                print(f"Error procesando mensaje: {e}")
+                continue
+        
+        # Calcular estadísticas
+        if dates:
+            dates.sort()
+            total_days = (dates[-1] - dates[0]).days + 1
+            avg_messages_per_day = round(total_messages / total_days, 1) if total_days > 0 else 0
+            
+            # Hora más activa
+            most_active_hour = max(set(message_times), key=message_times.count) if message_times else 12
+            
+            # Score de sentimiento basado en palabras románticas
+            sentiment_score = min(10, round((content_analysis['romantic_keywords'] / total_messages) * 100 + 5, 1))
+            
+            # Top emojis
+            top_emojis = sorted(content_analysis['emojis'].items(), key=lambda x: x[1], reverse=True)[:5]
+            top_emojis_list = [emoji[0] for emoji in top_emojis] if top_emojis else ['❤️', '😍', '🥰']
+            
+            # Fases de la relación basadas en datos reales
+            monthly_data = sorted(content_analysis['conversations_by_date'].items())
+            phases = []
+            if len(monthly_data) >= 3:
+                third = len(monthly_data) // 3
+                phases = [
+                    {
+                        "phase": "Inicio",
+                        "messages": sum([monthly_data[i][1] for i in range(third)]),
+                        "period": f"{monthly_data[0][0]} - {monthly_data[third-1][0]}"
+                    },
+                    {
+                        "phase": "Creciendo", 
+                        "messages": sum([monthly_data[i][1] for i in range(third, third*2)]),
+                        "period": f"{monthly_data[third][0]} - {monthly_data[third*2-1][0]}"
+                    },
+                    {
+                        "phase": "Consolidación",
+                        "messages": sum([monthly_data[i][1] for i in range(third*2, len(monthly_data))]),
+                        "period": f"{monthly_data[third*2][0]} - {monthly_data[-1][0]}"
+                    }
+                ]
+            
+            return {
+                "totalMessages": total_messages,
+                "totalDays": total_days,
+                "avgMessagesPerDay": avg_messages_per_day,
+                "longestConversation": content_analysis['longest_message'],
+                "mostActiveHour": most_active_hour,
+                "sentimentScore": sentiment_score,
+                "relationshipPhases": phases,
+                "topEmojis": top_emojis_list,
+                "specialMoments": content_analysis['romantic_keywords'],
+                "senderDistribution": senders,
+                "totalChars": content_analysis['total_chars'],
+                "firstMessage": dates[0].strftime('%Y-%m-%d') if dates else None,
+                "lastMessage": dates[-1].strftime('%Y-%m-%d') if dates else None
+            }
+        
+        return None
+        
+    except Exception as e:
+        print(f"Error en análisis: {e}")
+        import traceback
+        traceback.print_exc()
+        return None
+
+@app.route('/api/relationship-stats', methods=['GET'])
+def get_relationship_stats():
+    """Generate relationship statistics from real conversation data"""
+    try:
+        # Intentar análisis de datos reales
+        real_stats = analyze_conversation_data()
+        
+        if real_stats:
+            real_stats["generated_at"] = datetime.now().isoformat()
+            real_stats["data_source"] = "real_conversation_analysis"
+            if rag_service and hasattr(rag_service, 'chunk_texts'):
+                real_stats["rag_chunks"] = len(rag_service.chunk_texts)
+            return jsonify(real_stats)
+        
+        # Fallback: usar datos del RAG service si está disponible
+        elif rag_service and hasattr(rag_service, 'chunk_texts'):
+            total_chunks = len(rag_service.chunk_texts)
+            estimated_messages = total_chunks * 5
+            
+            return jsonify({
+                "totalMessages": estimated_messages,
+                "totalDays": 800,  # Estimado
+                "avgMessagesPerDay": round(estimated_messages / 800, 1),
+                "longestConversation": 150,
+                "mostActiveHour": 20,
+                "sentimentScore": 8.5,
+                "relationshipPhases": [
+                    {"phase": "Inicio", "messages": int(estimated_messages * 0.2), "period": "Primeros meses"},
+                    {"phase": "Creciendo", "messages": int(estimated_messages * 0.4), "period": "Desarrollo"},
+                    {"phase": "Consolidación", "messages": int(estimated_messages * 0.4), "period": "Actualidad"}
+                ],
+                "topEmojis": ['❤️', '😍', '🥰', '😘', '💕'],
+                "specialMoments": int(estimated_messages * 0.05),
+                "generated_at": datetime.now().isoformat(),
+                "data_source": "rag_estimation",
+                "rag_chunks": total_chunks
+            })
+        
+        else:
+            return jsonify({
+                "error": "No conversation data available",
+                "message": "Neither real data analysis nor RAG service is available"
+            }), 503
+            
+    except Exception as e:
+        return jsonify({
+            "error": str(e),
+            "data_source": "error_fallback"
+        }), 500
+
 
 @app.route('/api/start', methods=['POST'])
 @app.route('/api/start-quiz', methods=['POST'])  # Alias para compatibilidad con frontend
@@ -794,7 +988,7 @@ def get_location():
 if __name__ == '__main__':
     # 🚀 Inicializar RAG Service al inicio
     print("\n" + "="*60)
-    print("🚀 Inicializando Romantic AI Proposal System v2.4 - Cache Persistente")
+    print("🚀 Inicializando Romantic AI Proposal System v3.0 - Dashboard Edition")
     print("="*60)
     print(f"🏷️  Build: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     

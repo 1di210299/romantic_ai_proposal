@@ -1,5 +1,5 @@
-import ChatContainer from '@/components/ChatContainer';
+import Dashboard from '@/components/Dashboard';
 
 export default function Home() {
-  return <ChatContainer />;
+  return <Dashboard />;
 }
