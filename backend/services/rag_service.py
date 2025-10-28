@@ -32,6 +32,7 @@ class RAGService:
         # Vector store
         self.index: Optional[faiss.IndexFlatL2] = None
         self.messages_metadata: List[Dict] = []
+        self.chunk_texts: List[str] = []  # Propiedad para compatibilidad con app.py
         
         # Cache
         os.makedirs(cache_dir, exist_ok=True)
@@ -127,6 +128,8 @@ class RAGService:
                 with open(self.cache_file, 'rb') as f:
                     cache_data = pickle.load(f)
                     self.messages_metadata = cache_data['metadata']
+                    # Regenerar chunk_texts desde metadata para compatibilidad
+                    self.chunk_texts = [chunk['text'] for chunk in self.messages_metadata]
                 
                 self.index = faiss.read_index(self.index_file)
                 print(f"✅ Cache cargado: {len(self.messages_metadata)} chunks, {self.index.ntotal} vectores")
@@ -143,6 +146,7 @@ class RAGService:
         
         # 2. Extraer textos para embeddings
         chunk_texts = [chunk['text'] for chunk in chunks]
+        self.chunk_texts = chunk_texts  # Guardar para compatibilidad con app.py
         
         # 3. Generar embeddings en batch
         if not chunk_texts:
