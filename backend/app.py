@@ -579,11 +579,13 @@ def analyze_conversation_data():
             phases = []
             if len(monthly_data) >= 3:
                 third = len(monthly_data) // 3
+                # Forzar que el inicio sea marzo 2025
+                start_period = "2025-03"
                 phases = [
                     {
                         "phase": "Inicio",
                         "messages": sum([monthly_data[i][1] for i in range(third)]),
-                        "period": f"{monthly_data[0][0]} - {monthly_data[third-1][0]}"
+                        "period": f"{start_period} - {monthly_data[third-1][0]}"
                     },
                     {
                         "phase": "Creciendo", 

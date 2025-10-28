@@ -70,21 +70,16 @@ const Dashboard = () => {
 
   if (loading || !stats) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-white to-rose-50 flex items-center justify-center">
-        <div className="text-center max-w-md mx-auto">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-pink-500 mx-auto mb-4"></div>
-          <p className="text-gray-600 mb-2">Cargando análisis de conversaciones...</p>
-          <div className="text-sm text-gray-500">
-            {loading ? "Procesando datos..." : "Iniciando..."}
-          </div>
-          
-          {/* Indicador de progreso visual */}
-          <div className="mt-4 w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-gradient-to-r from-pink-400 to-rose-500 h-2 rounded-full animate-pulse" style={{width: "60%"}}></div>
-          </div>
-          
-          <div className="mt-4 text-xs text-gray-400">
-            💡 Tip: Las estadísticas se cargan más rápido después del primer acceso
+      <div className="min-h-screen bg-gradient-romantic flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-pastel-500 mx-auto mb-4"></div>
+          <p className="text-pastel-100 text-lg font-medium mb-4">Generando análisis personalizado...</p>
+          <div className="max-w-md mx-auto">
+            
+            <div className="bg-navy-700 rounded-full h-2 mb-2">
+              <div className="bg-gradient-to-r from-pastel-400 to-pastel-500 h-2 rounded-full animate-pulse" style={{width: "60%"}}></div>
+            </div>
+            <p className="text-sm text-pastel-300">Procesando 33,622 mensajes de amor...</p>
           </div>
         </div>
       </div>
@@ -99,49 +94,17 @@ const Dashboard = () => {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-3xl font-bold text-pastel-100 flex items-center gap-2">
-                <Heart className="text-romantic-400" size={32} />
+                <Heart className="text-pastel-400" size={32} />
                 Para Karem Kiyomi Ramos
               </h1>
-              <p className="text-pastel-200 mt-1 flex items-center gap-2">
+              <p className="text-pastel-200 mt-1">
                 Análisis de nuestras conversaciones
-                {stats.cache_hit && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-pastel-500/20 text-pastel-300 border border-pastel-500/30">
-                    ⚡ Carga rápida
-                  </span>
-                )}
-                {stats.analysis_type === 'enhanced_ai_analysis' && (
-                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-navy-700/50 text-pastel-400 border border-pastel-500/40">
-                    🤖 IA Avanzada
-                  </span>
-                )}
-                {stats.data_source && (
-                  <span className="text-xs text-pastel-400/50">
-                    {stats.data_source.replace(/_/g, ' ')}
-                  </span>
-                )}
               </p>
             </div>
             <div className="flex gap-3">
               <button
-                onClick={regenerateStats}
-                disabled={isRegenerating}
-                className="bg-gradient-to-r from-pastel-500 to-pastel-600 text-navy-900 px-4 py-2 rounded-2xl font-bold hover:from-pastel-400 hover:to-pastel-500 transition-all duration-200 flex items-center gap-2 disabled:opacity-50 border-2 border-navy-900/30 shadow-xl"
-              >
-                {isRegenerating ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-navy-900"></div>
-                    Analizando...
-                  </>
-                ) : (
-                  <>
-                    <Sparkles size={16} />
-                    Mejorar Análisis
-                  </>
-                )}
-              </button>
-              <button
                 onClick={() => window.location.href = '/chat'}
-                className="bg-gradient-to-r from-romantic-500 to-romantic-600 text-white px-6 py-3 rounded-2xl font-bold hover:from-romantic-400 hover:to-romantic-500 transition-all duration-200 flex items-center gap-2 border-2 border-navy-900/30 shadow-xl"
+                className="bg-gradient-to-r from-pastel-500 to-pastel-600 text-navy-900 px-6 py-3 rounded-2xl font-bold hover:from-pastel-400 hover:to-pastel-500 transition-all duration-200 flex items-center gap-2 border-2 border-navy-900/30 shadow-xl"
               >
                 <Bot size={20} />
                 Iniciar Chat
@@ -168,9 +131,9 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-pastel-300">Días Juntos</p>
-                <p className="text-3xl font-bold text-romantic-400">{stats.totalDays}</p>
+                <p className="text-3xl font-bold text-pastel-400">{stats.totalDays}</p>
               </div>
-              <Calendar className="text-romantic-500" size={32} />
+              <Calendar className="text-pastel-500" size={32} />
             </div>
           </div>
 
@@ -189,14 +152,14 @@ const Dashboard = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-pastel-300">Conexión</p>
-                <p className="text-3xl font-bold text-romantic-400">
+                <p className="text-3xl font-bold text-pastel-400">
                   {stats.connectionScore || stats.sentimentScore}/10
                 </p>
                 {stats.avgResponseTime && (
                   <p className="text-xs text-pastel-400/70 mt-1">⚡ {stats.avgResponseTime}</p>
                 )}
               </div>
-              <Sparkles className="text-romantic-500" size={32} />
+              <Sparkles className="text-pastel-500" size={32} />
             </div>
           </div>
         </div>
@@ -219,7 +182,7 @@ const Dashboard = () => {
               
               <div className="text-center p-6 bg-navy-700/50 rounded-2xl border border-pastel-500/20">
                 <div className="text-4xl mb-3">📸</div>
-                <p className="text-3xl font-bold text-romantic-400">{stats.conversationPatterns.photosShared.toLocaleString()}</p>
+                <p className="text-3xl font-bold text-pastel-400">{stats.conversationPatterns.photosShared.toLocaleString()}</p>
                 <p className="text-sm text-pastel-300">Fotos compartidas</p>
                 <p className="text-xs text-pastel-400/70 mt-1">{(stats.conversationPatterns.photosShared / stats.totalDays).toFixed(1)} por día</p>
               </div>
@@ -242,21 +205,21 @@ const Dashboard = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           {/* Evolución de la relación */}
-          <div className="bg-white rounded-xl shadow-sm border border-pink-100 p-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Users className="text-pink-500" size={24} />
+          <div className="bg-navy-800 rounded-xl shadow-sm border border-navy-600 p-6">
+            <h3 className="text-xl font-semibold text-pastel-100 mb-4 flex items-center gap-2">
+              <Users className="text-pastel-500" size={24} />
               Evolución de Nuestra Relación
             </h3>
             <div className="space-y-4">
               {stats.relationshipPhases.map((phase, index) => (
-                <div key={index} className="flex items-center justify-between p-4 bg-gradient-to-r from-pink-50 to-rose-50 rounded-lg">
+                <div key={index} className="flex items-center justify-between p-4 bg-gradient-to-r from-navy-700 to-navy-600 rounded-lg">
                   <div>
-                    <h4 className="font-semibold text-gray-900">{phase.phase}</h4>
-                    <p className="text-sm text-gray-600">{phase.period}</p>
+                    <h4 className="font-semibold text-pastel-100">{phase.phase}</h4>
+                    <p className="text-sm text-pastel-300">{phase.period}</p>
                   </div>
                   <div className="text-right">
-                    <p className="text-2xl font-bold text-pink-600">{phase.messages.toLocaleString()}</p>
-                    <p className="text-sm text-gray-500">mensajes</p>
+                    <p className="text-2xl font-bold text-pastel-400">{phase.messages.toLocaleString()}</p>
+                    <p className="text-sm text-pastel-300">mensajes</p>
                   </div>
                 </div>
               ))}
@@ -264,39 +227,39 @@ const Dashboard = () => {
           </div>
 
           {/* Análisis de conversaciones */}
-          <div className="bg-white rounded-xl shadow-sm border border-pink-100 p-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Sparkles className="text-pink-500" size={24} />
+          <div className="bg-navy-800 rounded-xl shadow-sm border border-navy-600 p-6">
+            <h3 className="text-xl font-semibold text-pastel-100 mb-4 flex items-center gap-2">
+              <Sparkles className="text-pastel-500" size={24} />
               Análisis de Sentimientos
             </h3>
             
             <div className="space-y-6">
               <div>
                 <div className="flex justify-between mb-2">
-                  <span className="text-sm font-medium text-gray-600">Conexión Emocional</span>
-                  <span className="text-sm font-bold text-pink-600">
+                  <span className="text-sm font-medium text-pastel-300">Conexión Emocional</span>
+                  <span className="text-sm font-bold text-pastel-400">
                     {stats.connectionScore || stats.sentimentScore}/10
                   </span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-3">
+                <div className="w-full bg-navy-700 rounded-full h-3">
                   <div 
-                    className="bg-gradient-to-r from-pink-400 to-rose-500 h-3 rounded-full"
+                    className="bg-gradient-to-r from-pastel-400 to-pastel-500 h-3 rounded-full"
                     style={{ width: `${(stats.connectionScore || stats.sentimentScore) * 10}%` }}
                   ></div>
                 </div>
               </div>
 
               <div>
-                <h4 className="font-semibold text-gray-900 mb-3">
+                <h4 className="font-semibold text-pastel-100 mb-3">
                   {stats.analysis_type === 'enhanced_ai_powered' ? 'Emojis Reales Más Usados' : 'Expresiones Frecuentes'}
                 </h4>
                 <div className="flex gap-3 flex-wrap">
                   {stats.topEmojis?.slice(0, 5).map((emoji, index) => (
-                    <div key={index} className="text-3xl p-2 bg-pink-50 rounded-lg hover:bg-pink-100 transition-colors">
+                    <div key={index} className="text-3xl p-2 bg-navy-700 rounded-lg hover:bg-navy-600 transition-colors">
                       {emoji}
                     </div>
                   )) || ['❤️', '😘', '💜', '😍', '🥰'].map((emoji, index) => (
-                    <div key={index} className="text-3xl p-2 bg-pink-50 rounded-lg opacity-50">
+                    <div key={index} className="text-3xl p-2 bg-navy-700 rounded-lg opacity-50">
                       {emoji}
                     </div>
                   ))}
@@ -306,13 +269,13 @@ const Dashboard = () => {
                 )}
               </div>
 
-              <div className="bg-gradient-to-r from-pink-50 to-rose-50 rounded-lg p-4">
+              <div className="bg-gradient-to-r from-navy-700 to-navy-600 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
-                  <Heart className="text-red-500" size={20} />
-                  <span className="font-semibold text-gray-900">Momentos Significativos</span>
+                  <Heart className="text-pastel-500" size={20} />
+                  <span className="font-semibold text-pastel-100">Momentos Significativos</span>
                 </div>
-                <p className="text-3xl font-bold text-red-600">{stats.specialMoments}</p>
-                <p className="text-sm text-gray-600">conversaciones destacadas</p>
+                <p className="text-3xl font-bold text-pastel-400">{stats.specialMoments}</p>
+                <p className="text-sm text-pastel-300">conversaciones destacadas</p>
               </div>
             </div>
           </div>
@@ -320,9 +283,9 @@ const Dashboard = () => {
 
 {/* Insights de IA (si están disponibles) */}
         {stats.aiInsights && (
-          <div className="mt-8 bg-white rounded-xl shadow-sm border border-blue-100 p-6">
-            <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <Bot className="text-blue-500" size={24} />
+          <div className="mt-8 bg-navy-800 rounded-xl shadow-sm border border-navy-600 p-6">
+            <h3 className="text-xl font-semibold text-pastel-100 mb-4 flex items-center gap-2">
+              <Bot className="text-pastel-500" size={24} />
               Análisis Inteligente de la Relación
             </h3>
             
@@ -341,7 +304,7 @@ const Dashboard = () => {
                   {stats.aiInsights.unique_language.unique_phrases?.length > 0 && (
                     <div>
                       <p className="text-sm text-gray-600">Frases especiales:</p>
-                      <p className="text-purple-600 text-sm italic">
+                      <p className="text-pastel-400 text-sm italic">
                         &quot;{stats.aiInsights.unique_language.unique_phrases[0]}&quot;
                       </p>
                     </div>
@@ -350,12 +313,12 @@ const Dashboard = () => {
               )}
               
               {stats.aiInsights.emotional_tone && (
-                <div className="p-4 bg-gradient-to-br from-pink-50 to-rose-50 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 mb-2">💖 Tono Emocional</h4>
+                <div className="p-4 bg-gradient-to-br from-navy-700 to-navy-600 rounded-lg">
+                  <h4 className="font-semibold text-pastel-100 mb-2">💖 Tono Emocional</h4>
                   <div className="space-y-2">
                     <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Sentimiento general:</span>
-                      <span className="text-pink-600 font-medium capitalize">
+                      <span className="text-sm text-pastel-300">Sentimiento general:</span>
+                      <span className="text-pastel-400 font-medium capitalize">
                         {stats.aiInsights.emotional_tone.overall_sentiment}
                       </span>
                     </div>
@@ -371,11 +334,11 @@ const Dashboard = () => {
             </div>
             
             {stats.aiInsights.main_topics && (
-              <div className="mt-6 p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg">
-                <h4 className="font-semibold text-gray-900 mb-2">🗨️ Temas Principales</h4>
+              <div className="mt-6 p-4 bg-gradient-to-br from-navy-700 to-navy-600 rounded-lg">
+                <h4 className="font-semibold text-pastel-100 mb-2">🗨️ Temas Principales</h4>
                 <div className="flex flex-wrap gap-2">
                   {stats.aiInsights.main_topics.slice(0, 5).map((topic, index) => (
-                    <span key={index} className="px-3 py-1 bg-white rounded-full text-sm text-purple-600 border border-purple-200">
+                    <span key={index} className="px-3 py-1 bg-navy-800 rounded-full text-sm text-pastel-300 border border-pastel-500/30">
                       {topic}
                     </span>
                   ))}
@@ -386,36 +349,36 @@ const Dashboard = () => {
         )}
 
         {/* Estadísticas adicionales */}
-        <div className="mt-8 bg-white rounded-xl shadow-sm border border-pink-100 p-6">
-          <h3 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-            <Clock className="text-pink-500" size={24} />
+        <div className="mt-8 bg-navy-800 rounded-xl shadow-sm border border-navy-600 p-6">
+          <h3 className="text-xl font-semibold text-pastel-100 mb-4 flex items-center gap-2">
+            <Clock className="text-pastel-500" size={24} />
             Estadísticas de Conversación
           </h3>
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="text-center p-4 bg-gradient-to-br from-pink-50 to-rose-50 rounded-lg">
-              <p className="text-3xl font-bold text-pink-600">
+            <div className="text-center p-4 bg-gradient-to-br from-navy-700 to-navy-600 rounded-lg">
+              <p className="text-3xl font-bold text-pastel-400">
                 {stats.conversationPatterns?.longMessages || stats.longestConversation}
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-pastel-300">
                 {stats.conversationPatterns ? 'mensajes largos enviados' : 'mensajes en la conversación más larga'}
               </p>
             </div>
             
-            <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg">
-              <p className="text-3xl font-bold text-purple-600">
+            <div className="text-center p-4 bg-gradient-to-br from-navy-700 to-navy-600 rounded-lg">
+              <p className="text-3xl font-bold text-pastel-400">
                 {stats.conversationPatterns?.voiceMessages || `${stats.mostActiveHour}:00`}
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-pastel-300">
                 {stats.conversationPatterns ? 'mensajes de voz' : 'hora más activa'}
               </p>
             </div>
             
-            <div className="text-center p-4 bg-gradient-to-br from-rose-50 to-red-50 rounded-lg">
-              <p className="text-3xl font-bold text-rose-600">
+            <div className="text-center p-4 bg-gradient-to-br from-navy-700 to-navy-600 rounded-lg">
+              <p className="text-3xl font-bold text-pastel-400">
                 {stats.conversationPatterns?.photosShared || Math.round(stats.totalMessages / stats.totalDays * 7)}
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-pastel-300">
                 {stats.conversationPatterns ? 'fotos compartidas' : 'mensajes promedio semanal'}
               </p>
             </div>
@@ -424,12 +387,12 @@ const Dashboard = () => {
 
         {/* Call to action */}
         <div className="mt-8 text-center">
-          <div className="bg-gradient-to-r from-pink-500 to-rose-500 rounded-xl p-8 text-white">
+          <div className="bg-gradient-to-r from-pastel-500 to-pastel-600 rounded-xl p-8 text-navy-900">
             <h3 className="text-2xl font-bold mb-2">Conversación Inteligente</h3>
-            <p className="text-pink-100 mb-6">Chatbot entrenado con {stats.totalMessages.toLocaleString()} mensajes reales</p>
+            <p className="text-navy-700 mb-6">Chatbot entrenado con {stats.totalMessages.toLocaleString()} mensajes reales</p>
             <button
               onClick={() => window.location.href = '/chat'}
-              className="bg-white text-pink-600 px-8 py-3 rounded-lg font-medium hover:bg-pink-50 transition-all duration-200"
+              className="bg-navy-900 text-pastel-100 px-8 py-3 rounded-lg font-medium hover:bg-navy-800 transition-all duration-200"
             >
               Iniciar Conversación
             </button>
