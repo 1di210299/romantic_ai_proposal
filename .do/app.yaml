@@ -1,24 +1,6 @@
 name: romantic-ai-proposal
 services:
-- name: frontend
-  source_dir: /frontend
-  github:
-    repo: 1di210299/romantic_ai_proposal
-    branch: main
-  build_command: npm run build
-  run_command: npm start
-  environment_slug: node-js
-  instance_count: 1
-  instance_size_slug: basic-xxs
-  routes:
-  - path: /
-    preserve_path_prefix: false
-  http_port: 3000
-  envs:
-  - key: NEXT_PUBLIC_BACKEND_URL
-    scope: RUN_AND_BUILD_TIME
-    value: ${backend.PUBLIC_URL}
-
+# Backend debe ir PRIMERO para las rutas /api/*
 - name: backend
   source_dir: /backend
   github:
@@ -48,3 +30,22 @@ services:
   - key: BACKEND_PORT
     scope: RUN_TIME
     value: "8080"
+
+# Frontend debe ir DESPUÉS y manejar todas las demás rutas
+- name: frontend
+  source_dir: /frontend
+  github:
+    repo: 1di210299/romantic_ai_proposal
+    branch: main
+  build_command: npm run build
+  run_command: npm start
+  environment_slug: node-js
+  instance_count: 1
+  instance_size_slug: basic-xxs
+  routes:
+  - path: /
+  http_port: 3000
+  envs:
+  - key: NEXT_PUBLIC_BACKEND_URL
+    scope: RUN_AND_BUILD_TIME
+    value: ${backend.PUBLIC_URL}
